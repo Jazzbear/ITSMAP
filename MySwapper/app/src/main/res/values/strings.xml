@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MySwapper</string>
+    <string name="btnClick">Click me!</string>
+    <string name="btnExit">Exit</string>
+</resources>

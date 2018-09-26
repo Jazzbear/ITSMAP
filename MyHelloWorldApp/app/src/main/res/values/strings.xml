@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">MyHelloWorldApp</string>
+    <!--<string name="edit_message">Enter a message</string>-->
+    <string name="button_send">Hello</string>
+    <string name="start_message">Hello World!</string>
+</resources>

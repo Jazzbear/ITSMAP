@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Click_counter</string>
+    <string name="action_settings">Settings</string>
+    <string name="counter_text">0</string>
+</resources>

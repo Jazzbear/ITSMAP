@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">ThereAndBackAgain</string>
+    <string name="questionField">What is your question?</string>
+    <string name="answerField">What is the answer?</string>
+    <string name="askButton">Send question!</string>
+    <string name="answerButton">OK</string>
+    <string name="questionInfo">Question</string>
+    <string name="answerInfo">Question from main</string>
+    <string name="cancelBtn">Cancel</string>
+</resources>
