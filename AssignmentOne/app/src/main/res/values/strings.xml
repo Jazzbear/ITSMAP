@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">AssignmentOne</string>
+    <string name="overviewHeader">My Stock:</string>
+    <string name="stockName">Shire Inc.</string>
+    <string name="stockPurchaseField">Purchased at 8999.9</string>
+    <string name="stockPrice">100</string>
+    <string name="numberOfStocks">10</string>
+    <string name="sectorType">Materials</string>
+    <string name="detailsButtonText">Details</string>
+    <string name="editButtonText">Edit</string>
+    <string name="backButtonText">Back</string>
+    <string name="saveButtonText">Save</string>
+    <string name="cancelButtonText">Cancel</string>
+</resources>
