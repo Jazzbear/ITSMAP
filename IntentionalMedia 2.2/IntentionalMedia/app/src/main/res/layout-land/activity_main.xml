@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.leafcastle.android.intentionalmedia.MediaBrowseActivity"
+    tools:layout_editor_absoluteY="73dp"
+    tools:layout_editor_absoluteX="0dp">
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2"
+        tools:layout_editor_absoluteY="62dp"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <Spinner
+        android:id="@+id/spnVideoLinks"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintRight_toLeftOf="@+id/btnViewWeb"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnViewWeb"
+        android:layout_marginEnd="24dp"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="3dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnViewApp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="24dp" />
+
+    <Button
+        android:id="@+id/btnViewApp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_app"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/btnViewYoutube"
+        android:layout_marginEnd="47dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="21dp"
+        android:layout_marginRight="47dp" />
+
+    <Button
+        android:id="@+id/btnViewWeb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_web"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/btnViewYoutube"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="42dp"
+        app:layout_constraintLeft_toLeftOf="@+id/btnViewYoutube" />
+
+    <Button
+        android:id="@+id/btnViewYoutube"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_youtube"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/btnViewWeb"
+        app:layout_constraintRight_toRightOf="@+id/btnViewApp"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="29dp"
+        app:layout_constraintLeft_toLeftOf="@+id/btnViewApp" />
+</android.support.constraint.ConstraintLayout>

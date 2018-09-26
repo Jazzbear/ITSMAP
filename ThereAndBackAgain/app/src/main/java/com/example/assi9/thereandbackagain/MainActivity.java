@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //calle the super method on onCreate to restore the savedInstance values.
         super.onCreate(savedInstanceState);
         //Initializing the content view and setting it to be activity_main.xml for this context
         setContentView(R.layout.activity_main);

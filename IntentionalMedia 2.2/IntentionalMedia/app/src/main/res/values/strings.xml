@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Intentional Media</string>
+    <string name="btn_app">APP</string>
+    <string name="btn_youtube">Youtube</string>
+    <string name="btn_web">Web</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_cancel">Cancel</string>
+
+</resources>

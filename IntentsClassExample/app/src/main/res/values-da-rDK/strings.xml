@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="txt_question">Spørgsmål</string>
+    <string name="txt_answer">Svar</string>
+    <string name="txt_questions_hint">Hvad er dit spørgsmål?</string>
+    <string name="txt_your_answer">Dit svar</string>
+</resources>

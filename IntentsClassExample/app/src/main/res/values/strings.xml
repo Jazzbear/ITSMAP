@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">IntentsClassExample</string>
+    <string name="txt_question">Question</string>
+    <string name="btn_answer_question">Get Answer</string>
+    <string name="txt_answer">Answer</string>
+    <string name="txt_questions_hint">What is your question?</string>
+    <string name="txt_your_answer">Your Answer</string>
+</resources>
