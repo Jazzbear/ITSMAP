@@ -12,35 +12,32 @@ public class Stock implements Parcelable {
     public String getStockName() {
         return StockName;
     }
-
     public void setStockName(String stockName) {
         StockName = stockName;
     }
-
     public int getStockPrice() {
         return StockPrice;
     }
-
     public void setStockPrice(int stockPrice) {
         StockPrice = stockPrice;
     }
-
     public int getStockAmount() {
         return StockAmount;
     }
-
     public void setStockAmount(int stockAmount) {
         StockAmount = stockAmount;
     }
-
     public String getStockSector() {
         return StockSector;
     }
-
     public void setStockSector(String stockSector) {
         StockSector = stockSector;
     }
 
+    //implicit Constructor
+    public Stock() {}
+
+    //Explicit Constructor
     public Stock(String stockName, int stockPrice, int stockAmount, String stockSector) {
         this.StockName = stockName;
         this.StockPrice = stockPrice;
@@ -48,7 +45,10 @@ public class Stock implements Parcelable {
         this.StockSector = stockSector;
     }
 
-    protected Stock(Parcel in) {
+    /*This is to retrieve the stock data from the parcel object.
+    * The constructor is invoked by the method createFromParcel(Parcel source) of
+    * the object CREATOR */
+    private Stock(Parcel in) {
         StockName = in.readString();
         StockPrice = in.readInt();
         StockAmount = in.readInt();
@@ -60,6 +60,7 @@ public class Stock implements Parcelable {
         return 0;
     }
 
+    //Storing the Stock data to Parcel object
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(StockName);

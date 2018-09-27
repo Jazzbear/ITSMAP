@@ -13,11 +13,11 @@ import static com.example.jazzbear.assignmentone.DataContainer.*;
 
 public class OverviewActivity extends AppCompatActivity {
 
-//    TextView overviewHeader;
+    static final String SAVED_OVERVIEW = "overview_is_set";
     TextView overviewStockName;
     TextView stockPurchasePrice;
     Button detailsButton;
-//    ArrayList<String> uiState =
+    Stock stock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,16 +28,26 @@ public class OverviewActivity extends AppCompatActivity {
         stockPurchasePrice = findViewById(R.id.overviewPurchased);
         detailsButton = findViewById(R.id.overviewButton);
 
-//        if (savedInstanceState != null) {
-//
-//        }
 
-        updateUI();
+
+        if (savedInstanceState != null) {
+            stock = savedInstanceState.getParcelable(SAVED_OVERVIEW);
+            updateUI();
+        } else {
+            stock = new Stock("Facebook",
+                    1000,
+                    14,
+                    "Technology");
+            updateUI();
+        }
 
         detailsButton.setOnClickListener(new View.OnClickListener() {
+            Stock stockToSend = stock;
+
             @Override
             public void onClick(View v) {
                 Intent detailsIntent = new Intent(OverviewActivity.this, DetailsActivity.class);
+                detailsIntent.putExtra(EXTRA_STOCKOBJECT, stockToSend);
                 startActivityForResult(detailsIntent, DETAILS_REQUEST);
             }
         });
@@ -56,18 +66,20 @@ public class OverviewActivity extends AppCompatActivity {
      }
 
     private void updateUI() {
-        overviewStockName.setText(EXTRA_STOCKNAME);
-        overviewStockName.setText(EXTRA_STOCKPRICE);
+        overviewStockName.setText(stock.getStockName());
+        String purchaseString = "Purchased at: " + stock.getStockPrice();
+        stockPurchasePrice.setText(purchaseString);
+        toast("UI Updated");
     }
 
     private void toast(String input) {
         Toast.makeText(this, input, Toast.LENGTH_SHORT).show();
     }
 
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        outState.putStringArrayList();
-////        super.onSaveInstanceState()
-//    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(SAVED_OVERVIEW, stock);
+    }
 
 }

@@ -7,21 +7,34 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import static com.example.jazzbear.assignmentone.DataContainer.*;
+
 public class DetailsActivity extends AppCompatActivity {
 
+    static final String SAVED_DETAILSVIEW = "overview_is_set";
     TextView detailName;
     TextView detailPrice;
     TextView detailAmount;
     TextView detailSector;
     Button backButton;
     Button editButton;
+    Stock detailsStock = new Stock();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        Intent overviewIntent = getIntent();
+        Intent intentFromOverview = getIntent();
+        detailsStock = intentFromOverview.getParcelableExtra(EXTRA_STOCKOBJECT);
+
+        if (savedInstanceState != null) {
+            detailsStock = savedInstanceState.getParcelable(SAVED_DETAILSVIEW);
+            assert detailsStock != null;
+            updateUI(detailsStock);
+        } else {
+            updateUI(detailsStock);
+        }
 
         detailName = findViewById(R.id.nameDetails);
         detailPrice = findViewById(R.id.priceDetails);
@@ -47,6 +60,13 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
+    private void updateUI(Stock input) {
+        detailName.setText(input.getStockName());
+        detailPrice.setText(input.getStockPrice());
+        detailAmount.setText(input.getStockAmount());
+        detailSector.setText(input.getStockSector());
+    }
+
     private void editButtonPressed() {
 
     }
@@ -54,5 +74,11 @@ public class DetailsActivity extends AppCompatActivity {
     private void backButtonPressed() {
         setResult(RESULT_CANCELED);
         finish();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(SAVED_DETAILSVIEW, detailsStock);
     }
 }
