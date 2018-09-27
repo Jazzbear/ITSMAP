@@ -11,4 +11,9 @@
     <string name="backButtonText">Back</string>
     <string name="saveButtonText">Save</string>
     <string name="cancelButtonText">Cancel</string>
+    <string-array name="Sectors">
+        <item>Technology</item>
+        <item>Healthcare</item>
+        <item>Basic Materials</item>
+    </string-array>
 </resources>
