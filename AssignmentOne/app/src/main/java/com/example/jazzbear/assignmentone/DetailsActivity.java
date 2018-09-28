@@ -38,22 +38,22 @@ public class DetailsActivity extends AppCompatActivity {
 //        toast(detailsStock.getStockName());
 //        detailName.setText("Facebook");
 
-        if (savedInstanceState != null) {
-            detailsStock = savedInstanceState.getParcelable(SAVED_DETAILSVIEW);
-//            assert detailsStock != null;
-            updateUI(detailsStock);
-        } else {
-            updateUI(detailsStock);
-        }
+//        if (savedInstanceState != null) {
+////            detailsStock = savedInstanceState.getParcelable(SAVED_DETAILSVIEW);
+//////            assert detailsStock != null;
+////            updateUI(detailsStock);
+////        } else {
+////            updateUI(detailsStock);
+////        }
 
 
         
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backButtonPressed();
-            }
-        });
+//        backButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                backButtonPressed();
+//            }
+//        });
         
 //        editButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -66,11 +66,11 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void updateUI(Stock input) {
-        String stockName = input.getStockName();
+//        String stockName = input.getStockName();
         int stockPrice = input.getStockPrice();
         int stockAmount = input.getStockAmount();
         String stockSector = input.getStockSector();
-        detailName.setText(stockName);
+//        detailName.setText(stockName);
         detailPrice.setText(stockPrice);
         detailAmount.setText(stockAmount);
         detailSector.setText(stockSector);
