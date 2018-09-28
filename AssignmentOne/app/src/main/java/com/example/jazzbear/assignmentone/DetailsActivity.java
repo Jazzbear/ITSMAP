@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import static com.example.jazzbear.assignmentone.DataContainer.*;
 
@@ -18,7 +19,7 @@ public class DetailsActivity extends AppCompatActivity {
     TextView detailSector;
     Button backButton;
     Button editButton;
-    Stock detailsStock = new Stock();
+    Stock detailsStock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,20 +29,24 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intentFromOverview = getIntent();
         detailsStock = intentFromOverview.getParcelableExtra(EXTRA_STOCKOBJECT);
 
-        if (savedInstanceState != null) {
-            detailsStock = savedInstanceState.getParcelable(SAVED_DETAILSVIEW);
-            assert detailsStock != null;
-            updateUI(detailsStock);
-        } else {
-            updateUI(detailsStock);
-        }
-
         detailName = findViewById(R.id.nameDetails);
         detailPrice = findViewById(R.id.priceDetails);
         detailAmount = findViewById(R.id.stocksDetails);
         detailSector = findViewById(R.id.sectorDetails);
         backButton = findViewById(R.id.backBtn);
         editButton = findViewById(R.id.editBtn);
+//        toast(detailsStock.getStockName());
+//        detailName.setText("Facebook");
+
+        if (savedInstanceState != null) {
+            detailsStock = savedInstanceState.getParcelable(SAVED_DETAILSVIEW);
+//            assert detailsStock != null;
+            updateUI(detailsStock);
+        } else {
+            updateUI(detailsStock);
+        }
+
+
         
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,21 +55,25 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
         
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editButtonPressed();
-            }
-        });
-        
+//        editButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                editButtonPressed();
+//            }
+//        });
+//
 
     }
 
     private void updateUI(Stock input) {
-        detailName.setText(input.getStockName());
-        detailPrice.setText(input.getStockPrice());
-        detailAmount.setText(input.getStockAmount());
-        detailSector.setText(input.getStockSector());
+        String stockName = input.getStockName();
+        int stockPrice = input.getStockPrice();
+        int stockAmount = input.getStockAmount();
+        String stockSector = input.getStockSector();
+        detailName.setText(stockName);
+        detailPrice.setText(stockPrice);
+        detailAmount.setText(stockAmount);
+        detailSector.setText(stockSector);
     }
 
     private void editButtonPressed() {
@@ -81,4 +90,9 @@ public class DetailsActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelable(SAVED_DETAILSVIEW, detailsStock);
     }
+
+    private void toast(String input) {
+        Toast.makeText(this, input, Toast.LENGTH_SHORT).show();
+    }
+
 }

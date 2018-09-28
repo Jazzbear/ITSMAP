@@ -32,6 +32,7 @@ public class OverviewActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             stock = savedInstanceState.getParcelable(SAVED_OVERVIEW);
+            toast("Refreshed UI");
             updateUI();
         } else {
             stock = new Stock("Facebook",
@@ -42,23 +43,29 @@ public class OverviewActivity extends AppCompatActivity {
         }
 
         detailsButton.setOnClickListener(new View.OnClickListener() {
-            Stock stockToSend = stock;
-
             @Override
             public void onClick(View v) {
-                Intent detailsIntent = new Intent(OverviewActivity.this, DetailsActivity.class);
-                detailsIntent.putExtra(EXTRA_STOCKOBJECT, stockToSend);
-                startActivityForResult(detailsIntent, DETAILS_REQUEST);
+                detailsButtonClicked();
             }
         });
     }
 
-     @Override
+    private void detailsButtonClicked() {
+        Stock stockToSend = stock;
+
+        Intent detailsIntent = new Intent(OverviewActivity.this, DetailsActivity.class);
+        detailsIntent.putExtra(EXTRA_STOCKOBJECT, stockToSend);
+        startActivityForResult(detailsIntent, DETAILS_REQUEST);
+    }
+
+    @Override
      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==DETAILS_REQUEST) {
             if (resultCode==RESULT_OK) {
-                updateUI();
+                toast("OK");
+//                stock = data.getParcelableExtra()
+//                updateUI();
             } else {
                 toast("No changes made");
             }
@@ -69,7 +76,7 @@ public class OverviewActivity extends AppCompatActivity {
         overviewStockName.setText(stock.getStockName());
         String purchaseString = "Purchased at: " + stock.getStockPrice();
         stockPurchasePrice.setText(purchaseString);
-        toast("UI Updated");
+//        toast("UI Updated");
     }
 
     private void toast(String input) {
