@@ -4,13 +4,15 @@ package com.example.jazzbear.assignmentone;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 
 public class EditActivity extends AppCompatActivity {
 
     private EditText stockName;
     private EditText priceValue;
     private EditText stockNumber;
-//    private
+    private RadioGroup radioGroup;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -33,13 +33,13 @@ public class OverviewActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             stock = savedInstanceState.getParcelable(SAVED_OVERVIEW);
             toast("Refreshed UI");
-            updateUI();
+            updateUI(stock);
         } else {
             stock = new Stock("Facebook",
                     1000.00,
                     14,
                     "Technology");
-            updateUI();
+            updateUI(stock);
         }
 
         detailsButton.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +54,7 @@ public class OverviewActivity extends AppCompatActivity {
         Stock stockToSend = stock;
 
         Intent detailsIntent = new Intent(OverviewActivity.this, DetailsActivity.class);
-        detailsIntent.putExtra(EXTRA_STOCKOBJECT, stockToSend);
+        detailsIntent.putExtra(STOCKOBJECT_EXTRA, stockToSend);
         startActivityForResult(detailsIntent, DETAILS_REQUEST);
     }
 
@@ -63,6 +63,8 @@ public class OverviewActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==DETAILS_REQUEST) {
             if (resultCode==RESULT_OK) {
+                Stock responseData = data.getParcelableExtra(STOCKOBJECT_EXTRA);
+                updateUI(responseData);
                 toast("OK");
 //                stock = data.getParcelableExtra()
 //                updateUI();
@@ -72,9 +74,9 @@ public class OverviewActivity extends AppCompatActivity {
         }
      }
 
-    private void updateUI() {
-        overviewStockName.setText(stock.getStockName());
-        String purchaseString = "Purchased at: " + stock.getStockPrice();
+    private void updateUI(Stock input) {
+        overviewStockName.setText(input.getStockName());
+        String purchaseString = "Purchased at: " + input.getStockPrice();
         stockPurchasePrice.setText(purchaseString);
 //        toast("UI Updated");
     }

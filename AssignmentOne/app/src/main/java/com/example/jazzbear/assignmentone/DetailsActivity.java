@@ -20,6 +20,7 @@ public class DetailsActivity extends AppCompatActivity {
     Button backButton;
     Button editButton;
     Stock detailsStock;
+    Stock newDetailsStock; /*= new Stock();*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         Intent intentFromOverview = getIntent();
-        detailsStock = intentFromOverview.getParcelableExtra(EXTRA_STOCKOBJECT);
+        detailsStock = intentFromOverview.getParcelableExtra(STOCKOBJECT_EXTRA);
 
         detailName = findViewById(R.id.nameDetails);
         detailPrice = findViewById(R.id.priceDetails);
@@ -63,10 +64,27 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void updateUI(Stock input) {
-        detailName.setText(input.getStockName());
-        detailPrice.setText(Double.toString(input.getStockPrice()));
-        detailAmount.setText(Integer.toString(input.getStockAmount()));
-        detailSector.setText(input.getStockSector());
+//        detailName.setText(input.getStockName());
+//        detailPrice.setText(Double.toString(input.getStockPrice()));
+//        detailAmount.setText(Integer.toString(input.getStockAmount()));
+//        detailSector.setText(input.getStockSector());
+
+        detailName.setText("Hurr");
+        detailPrice.setText("9000");
+        detailAmount.setText("55");
+        detailSector.setText("Bag");
+
+        String newName = detailName.getText().toString();
+        Double newPrice = Double.parseDouble(detailPrice.getText().toString());
+        int newAmount = Integer.parseInt(detailAmount.getText().toString());
+        String newSector = detailSector.getText().toString();
+
+        newDetailsStock = new Stock();
+        newDetailsStock.setStockName(newName);
+        newDetailsStock.setStockPrice(newPrice);
+        newDetailsStock.setStockAmount(newAmount);
+        newDetailsStock.setStockSector(newSector);
+
         toast("Updated UI");
     }
 
@@ -75,7 +93,9 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void backButtonPressed() {
-        setResult(RESULT_CANCELED);
+        Intent detailsResult = new Intent().putExtra(STOCKOBJECT_EXTRA, newDetailsStock);
+        setResult(RESULT_OK, detailsResult);
+//        setResult(RESULT_OK);
         finish();
     }
 

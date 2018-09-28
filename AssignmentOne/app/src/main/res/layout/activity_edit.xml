@@ -128,6 +128,7 @@
         app:layout_constraintGuide_percent="0.1" />
 
     <RadioGroup
+        android:id="@+id/editRadioGroup"
         android:layout_width="115dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -137,21 +138,21 @@
         app:layout_constraintTop_toBottomOf="@+id/stockAmountField">
 
         <RadioButton
-            android:id="@+id/radioButton5"
+            android:id="@+id/editRadio1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="RadioButton" />
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/editRadio2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="RadioButton" />
 
         <RadioButton
-            android:id="@+id/radioButton6"
+            android:id="@+id/editRadio3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
