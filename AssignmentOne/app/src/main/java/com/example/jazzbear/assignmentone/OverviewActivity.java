@@ -36,7 +36,7 @@ public class OverviewActivity extends AppCompatActivity {
             updateUI();
         } else {
             stock = new Stock("Facebook",
-                    1000,
+                    1000.00,
                     14,
                     "Technology");
             updateUI();

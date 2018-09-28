@@ -35,45 +35,39 @@ public class DetailsActivity extends AppCompatActivity {
         detailSector = findViewById(R.id.sectorDetails);
         backButton = findViewById(R.id.backBtn);
         editButton = findViewById(R.id.editBtn);
-//        toast(detailsStock.getStockName());
-//        detailName.setText("Facebook");
 
-//        if (savedInstanceState != null) {
-////            detailsStock = savedInstanceState.getParcelable(SAVED_DETAILSVIEW);
-//////            assert detailsStock != null;
-////            updateUI(detailsStock);
-////        } else {
-////            updateUI(detailsStock);
-////        }
+        if (savedInstanceState != null) {
+            detailsStock = savedInstanceState.getParcelable(SAVED_DETAILSVIEW);
+            assert detailsStock != null;
+            updateUI(detailsStock);
+        } else {
+            updateUI(detailsStock);
+        }
 
 
         
-//        backButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                backButtonPressed();
-//            }
-//        });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backButtonPressed();
+            }
+        });
         
-//        editButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                editButtonPressed();
-//            }
-//        });
-//
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editButtonPressed();
+            }
+        });
 
     }
 
     private void updateUI(Stock input) {
-//        String stockName = input.getStockName();
-        int stockPrice = input.getStockPrice();
-        int stockAmount = input.getStockAmount();
-        String stockSector = input.getStockSector();
-//        detailName.setText(stockName);
-        detailPrice.setText(stockPrice);
-        detailAmount.setText(stockAmount);
-        detailSector.setText(stockSector);
+        detailName.setText(input.getStockName());
+        detailPrice.setText(Double.toString(input.getStockPrice()));
+        detailAmount.setText(Integer.toString(input.getStockAmount()));
+        detailSector.setText(input.getStockSector());
+        toast("Updated UI");
     }
 
     private void editButtonPressed() {

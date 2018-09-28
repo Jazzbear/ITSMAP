@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class Stock implements Parcelable {
     private String StockName;
-    private int StockPrice;
+    private double StockPrice;
     private int StockAmount;
     private String StockSector;
 
@@ -15,10 +15,10 @@ public class Stock implements Parcelable {
     public void setStockName(String stockName) {
         StockName = stockName;
     }
-    public int getStockPrice() {
+    public double getStockPrice() {
         return StockPrice;
     }
-    public void setStockPrice(int stockPrice) {
+    public void setStockPrice(double stockPrice) {
         StockPrice = stockPrice;
     }
     public int getStockAmount() {
@@ -38,7 +38,7 @@ public class Stock implements Parcelable {
     public Stock() {}
 
     //Explicit Constructor
-    public Stock(String stockName, int stockPrice, int stockAmount, String stockSector) {
+    public Stock(String stockName, double stockPrice, int stockAmount, String stockSector) {
         this.StockName = stockName;
         this.StockPrice = stockPrice;
         this.StockAmount = stockAmount;
@@ -50,7 +50,7 @@ public class Stock implements Parcelable {
     * the object CREATOR */
     private Stock(Parcel in) {
         StockName = in.readString();
-        StockPrice = in.readInt();
+        StockPrice = in.readDouble();
         StockAmount = in.readInt();
         StockSector = in.readString();
     }
@@ -64,7 +64,7 @@ public class Stock implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(StockName);
-        dest.writeInt(StockPrice);
+        dest.writeDouble(StockPrice);
         dest.writeInt(StockAmount);
         dest.writeString(StockSector);
     }
