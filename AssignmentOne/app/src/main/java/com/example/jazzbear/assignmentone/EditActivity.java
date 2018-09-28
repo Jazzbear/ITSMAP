@@ -77,17 +77,17 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void saveChanges() {
-        Stock changedEditStock = new Stock();
-        if (checkFieldsAreValid() == true) {
-            changedEditStock = getChanges();
-
-        } else {
-            fieldValidation();
-        }
-
-        Intent editResult = new Intent().putExtra(STOCKOBJECT_EXTRA, editStock);
-        setResult(RESULT_OK, editResult);
-        finish();
+//        Stock changedEditStock = new Stock();
+//        if (checkFieldsAreValid() == true) {
+//            changedEditStock = getChanges();
+//
+//        } else {
+//            fieldValidation();
+//        }
+//
+//        Intent editResult = new Intent().putExtra(STOCKOBJECT_EXTRA, editStock);
+//        setResult(RESULT_OK, editResult);
+//        finish();
     }
 
     private void fieldValidation() {
@@ -126,7 +126,7 @@ public class EditActivity extends AppCompatActivity {
 
         // TODO: Skal muligvis have ændres string values sådan at vi sættes
         if(sectorValue != null) {
-            if (sectorValue.equalsIgnoreCase("Technology")){
+            if (sectorValue.equalsIgnoreCase("Technology")) {
                 radioButton1.setChecked(true);
             } else if (sectorValue.equalsIgnoreCase("Materials")) {
                 radioButton2.setChecked(true);
