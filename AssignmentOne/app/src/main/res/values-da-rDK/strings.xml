@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AssignmentOne</string>
+    <string name="overviewHeader">Min aktie:</string>
+    <string name="stockName">Shire Inc.</string>
+    <string name="stockPurchaseField">Købt for 8999.9</string>
+    <string name="stockPrice">100</string>
+    <string name="numberOfStocks">10</string>
+    <string name="sectorType">Teknologi</string>
+    <string name="detailsButtonText">Detaljer</string>
+    <string name="editButtonText">Ændre</string>
+    <string name="backButtonText">Tilbage</string>
+    <string name="saveButtonText">Gem</string>
+    <string name="cancelButtonText">Annuller</string>
+    <!--<string-array name="Sectors">-->
+    <!--<item>Technology</item>-->
+    <!--<item>Healthcare</item>-->
+    <!--<item>Basic Materials</item>-->
+    <!--</string-array>-->
+    <string name="sectorTech">Teknologi</string>
+    <string name="sectorMats">Materialer</string>
+    <string name="sectorHealth">Sunhedsplejning</string>
+    <string name="nameCat">Navn:</string>
+    <string name="priceCat">Pris:</string>
+    <string name="stockCat">#Aktier:</string>
+    <string name="sectorCat">Sektor:</string>
+    <string name="nameHint">Indtast aktie navn</string>
+    <string name="priceHint">Indtast aktie pris</string>
+    <string name="stocksHint">Indtast antal aktier</string>
 </resources>

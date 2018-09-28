@@ -1,6 +1,7 @@
 package com.example.jazzbear.assignmentone;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +14,7 @@ import static com.example.jazzbear.assignmentone.DataContainer.*;
 
 public class OverviewActivity extends AppCompatActivity {
 
-    static final String SAVED_OVERVIEW = "overview_is_set";
+    static final String OVERVIEW_SAVED = "overview_is_set";
     TextView overviewStockName;
     TextView stockPurchasePrice;
     Button detailsButton;
@@ -31,30 +32,31 @@ public class OverviewActivity extends AppCompatActivity {
 
 
         if (savedInstanceState != null) {
-            stock = savedInstanceState.getParcelable(SAVED_OVERVIEW);
-            toast("Refreshed UI");
+            stock = savedInstanceState.getParcelable(OVERVIEW_SAVED);
             updateUI(stock);
+            toast("Refreshed UI");
         } else {
+            Resources res = getResources();
+            String sector = res.getString(R.string.sectorType);
             stock = new Stock("Facebook",
                     1000.00,
                     14,
-                    "Technology");
+                    sector);
             updateUI(stock);
         }
 
         detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                detailsButtonClicked();
+                // TODO: Denne bør mulgivis også ændres ligesom i details activity
+                detailsButtonClicked(stock);
             }
         });
     }
 
-    private void detailsButtonClicked() {
-        Stock stockToSend = stock;
-
+    private void detailsButtonClicked(Stock stock) {
         Intent detailsIntent = new Intent(OverviewActivity.this, DetailsActivity.class);
-        detailsIntent.putExtra(STOCKOBJECT_EXTRA, stockToSend);
+        detailsIntent.putExtra(STOCKOBJECT_EXTRA, stock);
         startActivityForResult(detailsIntent, DETAILS_REQUEST);
     }
 
@@ -63,6 +65,7 @@ public class OverviewActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==DETAILS_REQUEST) {
             if (resultCode==RESULT_OK) {
+                // TODO: bør testes om vores andet stock object kan bruges.
                 Stock responseData = data.getParcelableExtra(STOCKOBJECT_EXTRA);
                 updateUI(responseData);
                 toast("OK");
@@ -88,7 +91,7 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(SAVED_OVERVIEW, stock);
+        outState.putParcelable(OVERVIEW_SAVED, stock);
     }
 
 }
