@@ -68,8 +68,8 @@ public class OverviewActivity extends AppCompatActivity {
         if (requestCode == DETAILS_REQUEST) {
             if (resultCode == RESULT_OK) {
                 // TODO: bør testes om vores andet stock object kan bruges.
-                Stock detailsResponse = data.getParcelableExtra(STOCKOBJECT_EXTRA);
-                updateUI(detailsResponse);
+                stock = data.getParcelableExtra(STOCKOBJECT_EXTRA);
+                updateUI(stock);
                 toast("OK");
 //                stock = data.getParcelableExtra()
 //                updateUI();
