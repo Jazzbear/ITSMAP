@@ -2,6 +2,7 @@ package com.example.jazzbear.assignmentone;
 
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -48,6 +49,8 @@ public class EditActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveBtn);
         cancelButton = findViewById(R.id.cancelBtn);
 
+        // TODO: Change this so we have another check if a field is empty
+        // TODO: Then add 3 more keys and then i can save the instance state with user changes
         if (savedInstanceState != null) {
             editStock = savedInstanceState.getParcelable(EDITVIEW_SAVED);
             assert editStock != null;
@@ -77,17 +80,19 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void saveChanges() {
-//        Stock changedEditStock = new Stock();
+        Stock changedEditStock = getChanges();
+
+        //TODO: needs field validation
 //        if (checkFieldsAreValid() == true) {
 //            changedEditStock = getChanges();
 //
 //        } else {
 //            fieldValidation();
 //        }
-//
-//        Intent editResult = new Intent().putExtra(STOCKOBJECT_EXTRA, editStock);
-//        setResult(RESULT_OK, editResult);
-//        finish();
+
+        Intent editResult = new Intent().putExtra(STOCKOBJECT_EXTRA, changedEditStock);
+        setResult(RESULT_OK, editResult);
+        finish();
     }
 
     private void fieldValidation() {
@@ -103,7 +108,6 @@ public class EditActivity extends AppCompatActivity {
         editPriceField.setText(Double.toString(input.getStockPrice()));
         editAmountField.setText(Integer.toString(input.getStockAmount()));
         setRadioButtons(input);
-//        setRadioButtons(input);
     }
 
     private Stock getChanges() {
@@ -111,6 +115,8 @@ public class EditActivity extends AppCompatActivity {
         String newName = editNameField.getText().toString();
         Double newPrice = Double.parseDouble(editPriceField.getText().toString());
         int newAmount = Integer.parseInt(editAmountField.getText().toString());
+
+        //TODO: Needs method implemented to check for sector seclected in view
         String newSector = sectorValue;
 
         // TODO: Kan muligvis ændres til bare at bruge detailsStock
@@ -123,14 +129,19 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void setRadioButtons(Stock input) {
+        Resources res = getResources();
+        String techSector = res.getString(R.string.sectorTech);
+        String materialSector = res.getString(R.string.sectorMats);
+        String healthSector = res.getString(R.string.sectorHealth);
+
 
         // TODO: Skal muligvis have ændres string values sådan at vi sættes
         if(sectorValue != null) {
-            if (sectorValue.equalsIgnoreCase("Technology")) {
+            if (sectorValue.equalsIgnoreCase(techSector)) {
                 radioButton1.setChecked(true);
-            } else if (sectorValue.equalsIgnoreCase("Materials")) {
+            } else if (sectorValue.equalsIgnoreCase(materialSector)) {
                 radioButton2.setChecked(true);
-            } else if (sectorValue.equalsIgnoreCase("Healthcare")) {
+            } else if (sectorValue.equalsIgnoreCase(healthSector)) {
                 radioButton3.setChecked(true);
             }
         }
@@ -153,4 +164,7 @@ public class EditActivity extends AppCompatActivity {
 //                }
 //        }
     }
+
+    //TODO: Add on onSaveInstanceState here and add a check on wether a field has been changed
+    //TODO: Then if its changed we output the fields to the bundle. Otherwise we output the stock.
 }

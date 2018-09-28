@@ -40,10 +40,10 @@ public class DetailsActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             detailsStock = savedInstanceState.getParcelable(DETAILSVIEW_SAVED);
             assert detailsStock != null;
-            updateUI(detailsStock);
+            updateDetailsUI(detailsStock);
             toast("Refreshed UI");
         } else {
-            updateUI(detailsStock);
+            updateDetailsUI(detailsStock);
         }
         
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +64,7 @@ public class DetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUI(Stock input) {
+    private void updateDetailsUI(Stock input) {
         detailName.setText(input.getStockName());
         detailPrice.setText(Double.toString(input.getStockPrice()));
         detailAmount.setText(Integer.toString(input.getStockAmount()));
@@ -87,6 +87,21 @@ public class DetailsActivity extends AppCompatActivity {
         startActivityForResult(editIntent, EDIT_REQUEST);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EDIT_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                detailsStock = data.getParcelableExtra(STOCKOBJECT_EXTRA);
+                updateDetailsUI(detailsStock);
+                //TODO: Needs to send result back to overview - FIXED!
+                toast("SAVED");
+            } else {
+                toast("Canceled");
+            }
+        }
+    }
+
     private void setChanges() {
         // TODO: Kan muligvis fjenes. Siden detailstock også burde blive sat med response fra editActivity.
         String newName = detailName.getText().toString();
@@ -94,7 +109,7 @@ public class DetailsActivity extends AppCompatActivity {
         int newAmount = Integer.parseInt(detailAmount.getText().toString());
         String newSector = detailSector.getText().toString();
 
-        // TODO: Kan muligvis ændres til bare at bruge detailsStock
+        // TODO: Kan muligvis ændres til bare at bruge detailsStock - FIXED
 //        detailsStock = new Stock();
         detailsStock.setStockName(newName);
         detailsStock.setStockPrice(newPrice);

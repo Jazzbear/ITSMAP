@@ -93,7 +93,7 @@
         android:layout_marginRight="32dp"
         android:ems="10"
         android:hint="@string/priceHint"
-        android:inputType="number"
+        android:inputType="numberSigned|numberDecimal"
         app:layout_constraintBaseline_toBaselineOf="@+id/txtEditPrice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -129,7 +129,7 @@
 
     <RadioGroup
         android:id="@+id/editRadioGroup"
-        android:layout_width="115dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
@@ -156,8 +156,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/sectorHealth"
-            android:onClick="onRadioButtonClicked"/>
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/sectorHealth" />
 
     </RadioGroup>
 

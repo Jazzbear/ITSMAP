@@ -6,23 +6,23 @@
     <string name="stockPurchaseField">Købt for 8999.9</string>
     <string name="stockPrice">100</string>
     <string name="numberOfStocks">10</string>
-    <string name="sectorType">Technology</string>
-    <string name="detailsButtonText">Details</string>
-    <string name="editButtonText">Edit</string>
+    <!--<string name="sectorType">Technology</string>-->
+    <string name="detailsButtonText">Detaljer</string>
+    <string name="editButtonText">Ændre</string>
     <string name="backButtonText">Tilbage</string>
     <string name="saveButtonText">Gem</string>
     <string name="cancelButtonText">Annuller</string>
-    <!--<string-array name="Sectors">-->
-    <!--<item>Technology</item>-->
-    <!--<item>Healthcare</item>-->
-    <!--<item>Basic Materials</item>-->
+    <!--<string-array name="sectors_array">-->
+        <!--<item>Technology</item>-->
+        <!--<item>Healthcare</item>-->
+        <!--<item>Basic Materials</item>-->
     <!--</string-array>-->
-    <!--<string name="sectorTech">Teknologi</string>-->
-    <!--<string name="sectorMats">Materialer</string>-->
-    <!--<string name="sectorHealth">Sunhedsplejning</string>-->
-    <string name="sectorTech">Technology</string>
-    <string name="sectorMats">Materials</string>
-    <string name="sectorHealth">Healthcare</string>
+    <string name="sectorTech">Teknologi</string>
+    <string name="sectorMats">Materialer</string>
+    <string name="sectorHealth">Sunhedsplejning</string>
+    <!--<string name="sectorTech">Technology</string>-->
+    <!--<string name="sectorMats">Materials</string>-->
+    <!--<string name="sectorHealth">Healthcare</string>-->
     <string name="nameCat">Navn:</string>
     <string name="priceCat">Pris:</string>
     <string name="stockCat">#Aktier:</string>

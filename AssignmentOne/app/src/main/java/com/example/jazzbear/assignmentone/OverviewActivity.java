@@ -37,7 +37,9 @@ public class OverviewActivity extends AppCompatActivity {
             toast("Refreshed UI");
         } else {
             Resources res = getResources();
-            String sector = res.getString(R.string.sectorType);
+//            String[] sectors = res.getStringArray(R.array.sectors_array);
+            String sector = res.getString(R.string.sectorTech);
+//            String sector = sectors[0];
             stock = new Stock("Facebook",
                     1000.00,
                     14,
@@ -63,11 +65,11 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==DETAILS_REQUEST) {
-            if (resultCode==RESULT_OK) {
+        if (requestCode == DETAILS_REQUEST) {
+            if (resultCode == RESULT_OK) {
                 // TODO: bør testes om vores andet stock object kan bruges.
-                Stock responseData = data.getParcelableExtra(STOCKOBJECT_EXTRA);
-                updateUI(responseData);
+                Stock detailsResponse = data.getParcelableExtra(STOCKOBJECT_EXTRA);
+                updateUI(detailsResponse);
                 toast("OK");
 //                stock = data.getParcelableExtra()
 //                updateUI();

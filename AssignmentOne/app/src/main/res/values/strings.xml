@@ -11,7 +11,7 @@
     <string name="backButtonText">Back</string>
     <string name="saveButtonText">Save</string>
     <string name="cancelButtonText">Cancel</string>
-    <!--<string-array name="Sectors">-->
+    <!--<string-array name="sectors_array">-->
         <!--<item>Technology</item>-->
         <!--<item>Healthcare</item>-->
         <!--<item>Basic Materials</item>-->
