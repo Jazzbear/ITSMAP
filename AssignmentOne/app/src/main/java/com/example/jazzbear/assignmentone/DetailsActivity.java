@@ -84,7 +84,6 @@ public class DetailsActivity extends AppCompatActivity {
                 //Update the stock object and update the ui
                 detailsStock = data.getParcelableExtra(STOCKOBJECT_EXTRA);
                 updateDetailsUI(detailsStock);
-                //TODO: Needs to send result back to overview - FIXED!
                 toast("SAVED");
             } else {
                 toast("Canceled");

@@ -90,7 +90,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private boolean checkFieldsAreValid() {
-        // TODO: implement
         String nameUserInput = editNameField.getText().toString();
         String priceUserInput = editPriceField.getText().toString();
         String amountUserInput = editAmountField.getText().toString();
