@@ -30,21 +30,23 @@ public class OverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview);
 
+        // Init view elements
         overviewStockName = findViewById(R.id.overviewName);
         stockPurchasePrice = findViewById(R.id.overviewPurchased);
         detailsButton = findViewById(R.id.overviewButton);
         imgView = findViewById(R.id.imageView);
 
-
+        // Recreating after and instance saved state.
+        // Otherwise initializes first stock with default values
         if (savedInstanceState != null) {
             stock = savedInstanceState.getParcelable(OVERVIEW_SAVED);
             updateUI(stock);
             toast("Refreshed UI");
         } else {
+            // Getting the resources so we can set the language to the right locale
+            // DA=Teknologi and EN=Technology
             Resources res = getResources();
-//            String[] sectors = res.getStringArray(R.array.sectors_array);
             String sector = res.getString(R.string.sectorTech);
-//            String sector = sectors[0];
             stock = new Stock("Facebook",
                     1000.00,
                     14,
@@ -55,13 +57,13 @@ public class OverviewActivity extends AppCompatActivity {
         detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Denne bør mulgivis også ændres ligesom i details activity
                 detailsButtonClicked(stock);
             }
         });
     }
 
     private void detailsButtonClicked(Stock stock) {
+        //Sent an intent to details and parse the stock object.
         Intent detailsIntent = new Intent(OverviewActivity.this, DetailsActivity.class);
         detailsIntent.putExtra(STOCKOBJECT_EXTRA, stock);
         startActivityForResult(detailsIntent, DETAILS_REQUEST);
@@ -72,7 +74,7 @@ public class OverviewActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == DETAILS_REQUEST) {
             if (resultCode == RESULT_OK) {
-                // TODO: bør testes om vores andet stock object kan bruges.
+                //Update the stock object and update the ui
                 stock = data.getParcelableExtra(STOCKOBJECT_EXTRA);
                 updateUI(stock);
                 toast("OK");
@@ -90,6 +92,7 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     private void setImageView(Stock input) {
+        // Getting resources so i can check on the string values for sector, for the right locale.
         String sectorValue = input.getStockSector();
         Resources res = getResources();
         String techSector = res.getString(R.string.sectorTech);
@@ -98,6 +101,7 @@ public class OverviewActivity extends AppCompatActivity {
 
         //commented out the setImageDrawable since its better to use icons as they scale in pixel density for each device.
         // but left them there to show the alternative.
+        //Used this to find out how to set icons instead: https://stackoverflow.com/questions/30800708/how-to-load-images-from-mipmap-folder-programatically
         if (sectorValue != null) {
             if (sectorValue.equalsIgnoreCase(techSector)) {
                 imgView.setImageResource(R.mipmap.ic_technology_foreground);

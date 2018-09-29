@@ -20,7 +20,6 @@ public class DetailsActivity extends AppCompatActivity {
     Button backButton;
     Button editButton;
     Stock detailsStock = new Stock();
-//    Stock newDetailsStock; /*= new Stock();*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +55,6 @@ public class DetailsActivity extends AppCompatActivity {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* TODO: bør ændres til endten tom eller stock, i det at vi burde bare
-                * TODO: sende det samme object med. men det kan altid ændres, i alle tilfælde
-                * TODO: så bør stock nok initialiseres i toppen så den ikke kan være null*/
                 editButtonPressed(detailsStock);
             }
         });
@@ -69,18 +65,11 @@ public class DetailsActivity extends AppCompatActivity {
         detailPrice.setText(Double.toString(input.getStockPrice()));
         detailAmount.setText(Integer.toString(input.getStockAmount()));
         detailSector.setText(input.getStockSector());
-
-//        detailName.setText("Hurr");
-//        detailPrice.setText("9000");
-//        detailAmount.setText("55");
-//        detailSector.setText("Bag");
-//
         setChanges();
 
         toast("Updated UI");
     }
 
-    // TODO: bør nok ændres til at være tom
     private void editButtonPressed(Stock stock) {
         Intent editIntent = new Intent(DetailsActivity.this, EditActivity.class);
         editIntent.putExtra(STOCKOBJECT_EXTRA, stock);
@@ -92,6 +81,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == EDIT_REQUEST) {
             if (resultCode == RESULT_OK) {
+                //Update the stock object and update the ui
                 detailsStock = data.getParcelableExtra(STOCKOBJECT_EXTRA);
                 updateDetailsUI(detailsStock);
                 //TODO: Needs to send result back to overview - FIXED!
@@ -102,25 +92,24 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
+    /*The set changes method makes sure that when ever we return to the details view.
+    * Then the stock update is always kept up to date since the update ui method calls setChanges*/
     private void setChanges() {
-        // TODO: Kan muligvis fjenes. Siden detailstock også burde blive sat med response fra editActivity.
         String newName = detailName.getText().toString();
         Double newPrice = Double.parseDouble(detailPrice.getText().toString());
         int newAmount = Integer.parseInt(detailAmount.getText().toString());
         String newSector = detailSector.getText().toString();
 
-        // TODO: Kan muligvis ændres til bare at bruge detailsStock - FIXED
-//        detailsStock = new Stock();
         detailsStock.setStockName(newName);
         detailsStock.setStockPrice(newPrice);
         detailsStock.setStockAmount(newAmount);
         detailsStock.setStockSector(newSector);
     }
 
+    //Send an intent result back to the the overview and destroy details view.
     private void backButtonPressed() {
         Intent detailsResult = new Intent().putExtra(STOCKOBJECT_EXTRA, detailsStock);
         setResult(RESULT_OK, detailsResult);
-//        setResult(RESULT_OK);
         finish();
     }
 
