@@ -99,8 +99,8 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="108dp"
-        android:layout_height="108dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="89dp"
@@ -109,6 +109,6 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
         app:layout_constraintTop_toBottomOf="@+id/overviewHeader"
-        app:srcCompat="@drawable/technology" />
+        app:srcCompat="@mipmap/ic_technology_foreground" />
 
 </android.support.constraint.ConstraintLayout>
