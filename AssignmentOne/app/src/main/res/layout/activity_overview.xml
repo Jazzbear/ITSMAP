@@ -11,7 +11,7 @@
         android:id="@+id/overviewHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="47dp"
+        android:layout_marginTop="73dp"
         android:text="@string/overviewHeader"
         android:textColor="@android:color/black"
         android:textSize="24sp"
@@ -24,48 +24,47 @@
         android:id="@+id/overviewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginStart="17dp"
+        android:layout_marginLeft="17dp"
+        android:layout_marginTop="63dp"
         android:text="@string/stockName"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/overviewHeader"
         app:layout_constraintTop_toBottomOf="@+id/overviewHeader" />
 
     <TextView
         android:id="@+id/overviewPurchased"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="250dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="39dp"
         android:text="@string/stockPurchaseField"
         android:textColor="@android:color/black"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/overviewButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/overviewName"
-        app:layout_constraintVertical_chainStyle="spread" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/overviewButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginBottom="150dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginBottom="95dp"
         android:text="@string/detailsButtonText"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/overviewPurchased" />
+        app:layout_constraintStart_toStartOf="@+id/overviewPurchased" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="29dp"
+        android:layout_marginLeft="29dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/overviewPurchased"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/ic_technology" />
 
 </android.support.constraint.ConstraintLayout>
