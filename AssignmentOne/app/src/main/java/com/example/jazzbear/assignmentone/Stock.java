@@ -2,6 +2,9 @@ package com.example.jazzbear.assignmentone;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+/*DISCLIAMER!!!!!! I used these sites/examples to help me create my stock class:
+* https://en.proft.me/2017/02/28/pass-object-between-activities-android-parcelable/
+* http://www.parcelabler.com/ */
 
 public class Stock implements Parcelable {
     private String StockName;

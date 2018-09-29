@@ -1,0 +1,6 @@
+DISCLIAMER!!!!!! I used these sites/examples to help me create my stock class:
+* https://en.proft.me/2017/02/28/pass-object-between-activities-android-parcelable/
+* http://www.parcelabler.com/ 
+
+And for the rest of the code i used mostly the android developer guides and some stackoverflow posts to help
+understanding the use of some of the elements like how to set errors in EditText and such.
