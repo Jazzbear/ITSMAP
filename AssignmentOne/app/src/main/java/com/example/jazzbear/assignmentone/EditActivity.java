@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import static com.example.jazzbear.assignmentone.DataContainer.*;
 
@@ -53,8 +54,7 @@ public class EditActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveBtn);
         cancelButton = findViewById(R.id.cancelBtn);
 
-        // TODO: Change this so we have another check if a field is empty
-        // TODO: Then add 3 more keys and then i can save the instance state with user changes
+        // TODO: Instance state needs to be done - DONE it now saves the state in a new object.
         if (savedInstanceState != null) {
             editStock = savedInstanceState.getParcelable(EDITVIEW_SAVED);
             assert editStock != null;
@@ -84,26 +84,46 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void saveChanges() {
-        Stock changedEditStock = getChanges();
-
-        //TODO: needs field validation
-//        if (checkFieldsAreValid() == true) {
-//            changedEditStock = getChanges();
-//
-//        } else {
-//            fieldValidation();
-//        }
-
-        Intent editResult = new Intent().putExtra(STOCKOBJECT_EXTRA, changedEditStock);
-        setResult(RESULT_OK, editResult);
-        finish();
+        //TODO: needs field validation - DONE!
+        if (checkFieldsAreValid() == true) {
+            getChanges();
+            Intent editResult = new Intent().putExtra(STOCKOBJECT_EXTRA, editStock);
+            setResult(RESULT_OK, editResult);
+            finish();
+        } else {
+            toast("Could not save!");
+        }
     }
 
     private void fieldValidation() {
+
     }
 
     private boolean checkFieldsAreValid() {
         // TODO: implement
+        String nameUserInput = editNameField.getText().toString();
+        String priceUserInput = editPriceField.getText().toString();
+        String amountUserInput = editAmountField.getText().toString();
+//        if (editNameField != null || editPriceField != null || editAmountField != null)
+        if (nameUserInput.matches("")) {
+            editNameField.requestFocus();
+            editNameField.setError("You need to input a name");
+            return false;
+        } else if (nameUserInput.length() < 4) {
+            editNameField.requestFocus();
+            editNameField.setError("Name needs to be at least 4 characters");
+            return false;
+        }
+        if (priceUserInput.matches("")) {
+            editPriceField.requestFocus();
+            editPriceField.setError("You need to input a price");
+            return false;
+        }
+        if (amountUserInput.matches("")) {
+            editAmountField.requestFocus();
+            editAmountField.setError("You need to input an amount of stocks");
+            return false;
+        }
         return true;
     }
 
@@ -114,22 +134,21 @@ public class EditActivity extends AppCompatActivity {
         setRadioButtons(input);
     }
 
-    private Stock getChanges() {
-        // TODO: Kan muligvis fjenes. Siden detailstock også burde blive sat med response fra editActivity.
-        String newName = editNameField.getText().toString();
-        Double newPrice = Double.parseDouble(editPriceField.getText().toString());
-        int newAmount = Integer.parseInt(editAmountField.getText().toString());
+    //TODO: Change this back to stock return value, if we go back to using a new object.
+    private void getChanges() {
+//        String newName = editNameField.getText().toString();
+////        Double newPrice = Double.parseDouble(editPriceField.getText().toString());
+////        int newAmount = Integer.parseInt(editAmountField.getText().toString());
+////        String newSector = sectorValue;
 
-        //TODO: Needs method implemented to check for sector seclected in view
-        String newSector = sectorValue;
-
-        // TODO: Kan muligvis ændres til bare at bruge detailsStock
+        // TODO: Kan muligvis ændres til bare at bruge editStock
 //        editStock = new Stock();
-        editStock.setStockName(newName);
-        editStock.setStockPrice(newPrice);
-        editStock.setStockAmount(newAmount);
-        editStock.setStockSector(newSector);
-        return editStock;
+        // TODO: beslut om jeg vil bruge inline metoden eller sætte nogle variabler først som foroven.
+        editStock.setStockName(editNameField.getText().toString());
+        editStock.setStockPrice(Double.parseDouble(editPriceField.getText().toString()));
+        editStock.setStockAmount(Integer.parseInt(editAmountField.getText().toString()));
+        editStock.setStockSector(sectorValue);
+//        return editStock;
     }
 
     private void setRadioButtons(Stock input) {
@@ -138,8 +157,6 @@ public class EditActivity extends AppCompatActivity {
         String materialSector = res.getString(R.string.sectorMats);
         String healthSector = res.getString(R.string.sectorHealth);
 
-
-        // TODO: Skal muligvis have ændres string values sådan at vi sættes
         if(sectorValue != null) {
             if (sectorValue.equalsIgnoreCase(techSector)) {
                 radioButton1.setChecked(true);
@@ -149,37 +166,49 @@ public class EditActivity extends AppCompatActivity {
                 radioButton3.setChecked(true);
             }
         }
-//        switch (sectorValue) {
-//            case "Technology":
-//                radioButton1.setChecked(true);
-//                break;
-//            case "Materials":
-//
-//        }
     }
 
     public void onRadioButtonClicked(View view) {
-//        boolean checked = ((RadioButton) view).isChecked();
-//
-//        switch (view.getId()) {
-//            case R.id.editRadio1:
-//                if (checked) {
-//                    sectorValue = techSector;
-//                }
-//                break;
-//            case R.id.editRadio2:
-//                if (checked) {
-//                    sectorValue = materialSector;
-//                }
-//                break;
-//            case R.id.editRadio3:
-//                if (checked) {
-//                    sectorValue = healthSector;
-//                }
-//                break;
-//        }
+        Resources res = getResources();
+        String techSector = res.getString(R.string.sectorTech);
+        String materialSector = res.getString(R.string.sectorMats);
+        String healthSector = res.getString(R.string.sectorHealth);
+
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+            case R.id.editRadio1:
+                if (checked) {
+                    sectorValue = techSector;
+                }
+                break;
+            case R.id.editRadio2:
+                if (checked) {
+                    sectorValue = materialSector;
+                }
+                break;
+            case R.id.editRadio3:
+                if (checked) {
+                    sectorValue = healthSector;
+                }
+                break;
+        }
     }
 
-    //TODO: Add on onSaveInstanceState here and add a check on wether a field has been changed
-    //TODO: Then if its changed we output the fields to the bundle. Otherwise we output the stock.
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // TODO: Maybe use the out of scope variable editStock instead? - Done!
+        getChanges();
+        toast("State saved");
+        /*Its fine here that we just saved the stock even with empty fields,
+        * because it is never parsed back to details on cancel, and saveChanges will
+        * never allow empty fields.*/
+        outState.putParcelable(EDITVIEW_SAVED, editStock);
+    }
+
+    private void toast(String input) {
+        Toast.makeText(this, input, Toast.LENGTH_SHORT).show();
+    }
+
 }
