@@ -27,6 +27,10 @@ public class EditActivity extends AppCompatActivity {
     Button cancelButton;
     Stock editStock = new Stock();
     String sectorValue;
+//    Resources res = getResources();
+//    String techSector = res.getString(R.string.sectorTech);
+//    String materialSector = res.getString(R.string.sectorMats);
+//    String healthSector = res.getString(R.string.sectorHealth);
 //    Stock newEditStock;
 
     @Override
@@ -159,9 +163,20 @@ public class EditActivity extends AppCompatActivity {
 //
 //        switch (view.getId()) {
 //            case R.id.editRadio1:
-//                if(checked) {
-//
+//                if (checked) {
+//                    sectorValue = techSector;
 //                }
+//                break;
+//            case R.id.editRadio2:
+//                if (checked) {
+//                    sectorValue = materialSector;
+//                }
+//                break;
+//            case R.id.editRadio3:
+//                if (checked) {
+//                    sectorValue = healthSector;
+//                }
+//                break;
 //        }
     }
 
