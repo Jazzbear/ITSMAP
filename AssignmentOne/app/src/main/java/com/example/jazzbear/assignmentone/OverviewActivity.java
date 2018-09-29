@@ -1,11 +1,14 @@
 package com.example.jazzbear.assignmentone;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +20,7 @@ public class OverviewActivity extends AppCompatActivity {
     static final String OVERVIEW_SAVED = "overview_is_set";
     TextView overviewStockName;
     TextView stockPurchasePrice;
+    ImageView imgView;
     Button detailsButton;
     Stock stock;
 
@@ -28,7 +32,7 @@ public class OverviewActivity extends AppCompatActivity {
         overviewStockName = findViewById(R.id.overviewName);
         stockPurchasePrice = findViewById(R.id.overviewPurchased);
         detailsButton = findViewById(R.id.overviewButton);
-
+        imgView = findViewById(R.id.imageView);
 
 
         if (savedInstanceState != null) {
@@ -83,7 +87,27 @@ public class OverviewActivity extends AppCompatActivity {
         overviewStockName.setText(input.getStockName());
         String purchaseString = "Purchased at: " + input.getStockPrice();
         stockPurchasePrice.setText(purchaseString);
+        setImageView(input);
 //        toast("UI Updated");
+    }
+
+    private void setImageView(Stock input) {
+        String sectorValue = input.getStockSector();
+        Resources res = getResources();
+        String techSector = res.getString(R.string.sectorTech);
+        String materialSector = res.getString(R.string.sectorMats);
+        String healthSector = res.getString(R.string.sectorHealth);
+
+
+        if (sectorValue != null) {
+            if (sectorValue.equalsIgnoreCase(techSector)) {
+                imgView.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.technology));
+            } else if (sectorValue.equalsIgnoreCase(materialSector)) {
+                imgView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.materials));
+            } else if (sectorValue.equalsIgnoreCase(healthSector)) {
+                imgView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.healthcare));
+            }
+        }
     }
 
     private void toast(String input) {

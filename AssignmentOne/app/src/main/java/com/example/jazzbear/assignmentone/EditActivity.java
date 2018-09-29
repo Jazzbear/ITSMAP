@@ -95,10 +95,6 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    private void fieldValidation() {
-
-    }
-
     private boolean checkFieldsAreValid() {
         // TODO: implement
         String nameUserInput = editNameField.getText().toString();
