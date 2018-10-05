@@ -85,7 +85,7 @@ public class EditActivity extends AppCompatActivity {
             setResult(RESULT_OK, editResult);
             finish();
         } else {
-            toast("Could not save!");
+            toast(getResources().getString(R.string.toastFailedSaving));
         }
     }
 
@@ -98,21 +98,21 @@ public class EditActivity extends AppCompatActivity {
         //And this https://stackoverflow.com/questions/6538709/edittext-seterror-with-no-message-just-the-icon
         if (nameUserInput.matches("")) {
             editNameField.requestFocus();
-            editNameField.setError("You need to input a name");
+            editNameField.setError(getResources().getString(R.string.errorInputName));
             return false;
         } else if (nameUserInput.length() < 4) {
             editNameField.requestFocus();
-            editNameField.setError("Name needs to be at least 4 characters");
+            editNameField.setError(getResources().getString(R.string.errorInputLengh));
             return false;
         }
         if (priceUserInput.matches("")) {
             editPriceField.requestFocus();
-            editPriceField.setError("You need to input a price");
+            editPriceField.setError(getResources().getString(R.string.errorInputPrice));
             return false;
         }
         if (amountUserInput.matches("")) {
             editAmountField.requestFocus();
-            editAmountField.setError("You need to input an amount of stocks");
+            editAmountField.setError(getResources().getString(R.string.errorInputAmount));
             return false;
         }
         return true;
@@ -185,7 +185,7 @@ public class EditActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         getChanges(); // Get changes before saving so that the editStock object is up to date.
-        toast("State saved");
+//        toast("State saved"); // Toast used for testing functionality
         /*Its fine here that we just saved the stock even with empty fields,
         * because it is never parsed back to details on cancel, and saveChanges will
         * never allow empty fields.*/

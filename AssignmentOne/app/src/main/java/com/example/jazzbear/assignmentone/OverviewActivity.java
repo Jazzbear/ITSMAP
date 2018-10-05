@@ -41,7 +41,7 @@ public class OverviewActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             stock = savedInstanceState.getParcelable(OVERVIEW_SAVED);
             updateUI(stock);
-            toast("Refreshed UI");
+//            toast("Refreshed UI");
         } else {
             // Getting the resources so we can set the language to the right locale
             // DA=Teknologi and EN=Technology
@@ -77,16 +77,16 @@ public class OverviewActivity extends AppCompatActivity {
                 //Update the stock object and update the ui
                 stock = data.getParcelableExtra(STOCKOBJECT_EXTRA);
                 updateUI(stock);
-                toast("OK");
+                toast(getResources().getString(R.string.toastOk));
             } else {
-                toast("No changes made");
+                toast(getResources().getString(R.string.toastNoChanges));
             }
         }
      }
 
     private void updateUI(Stock input) {
         overviewStockName.setText(input.getStockName());
-        String purchaseString = "Purchased at: " + input.getStockPrice();
+        String purchaseString = getResources().getString(R.string.stockPurchaseText) + input.getStockPrice();
         stockPurchasePrice.setText(purchaseString);
         setImageView(input);
     }

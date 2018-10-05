@@ -40,7 +40,7 @@ public class DetailsActivity extends AppCompatActivity {
             detailsStock = savedInstanceState.getParcelable(DETAILSVIEW_SAVED);
             assert detailsStock != null;
             updateDetailsUI(detailsStock);
-            toast("Refreshed UI");
+//            toast("Refreshed UI"); // Toast for testing
         } else {
             updateDetailsUI(detailsStock);
         }
@@ -66,8 +66,7 @@ public class DetailsActivity extends AppCompatActivity {
         detailAmount.setText(Integer.toString(input.getStockAmount()));
         detailSector.setText(input.getStockSector());
         setChanges();
-
-        toast("Updated UI");
+//        toast("Updated UI"); // For testing
     }
 
     private void editButtonPressed(Stock stock) {
@@ -82,11 +81,12 @@ public class DetailsActivity extends AppCompatActivity {
         if (requestCode == EDIT_REQUEST) {
             if (resultCode == RESULT_OK) {
                 //Update the stock object and update the ui
-                detailsStock = data.getParcelableExtra(STOCKOBJECT_EXTRA);
-                updateDetailsUI(detailsStock);
-                toast("SAVED");
+//                detailsStock = data.getParcelableExtra(STOCKOBJECT_EXTRA);
+//                updateDetailsUI(detailsStock);
+                setResult(RESULT_OK, data);
+                finish();//send us sraight back to the overview
             } else {
-                toast("Canceled");
+                toast(getResources().getString(R.string.toastCanceled));
             }
         }
     }
@@ -107,8 +107,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     //Send an intent result back to the the overview and destroy details view.
     private void backButtonPressed() {
-        Intent detailsResult = new Intent().putExtra(STOCKOBJECT_EXTRA, detailsStock);
-        setResult(RESULT_OK, detailsResult);
+        setResult(RESULT_CANCELED);
         finish();
     }
 
