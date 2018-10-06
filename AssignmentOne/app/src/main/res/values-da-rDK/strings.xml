@@ -29,6 +29,6 @@
     <string name="toastCanceled">Annulleret</string>
     <string name="toastSaved">Gemt</string>
     <string name="toastFailedSaving">Kunne ikke gemmes!</string>
-    <string name="stockPurchaseText">Købt for: </string>
+    <string name="stockPurchaseText">Købt for:</string>
     <string name="toastNoChanges">Ingen ændringer foretaget</string>
 </resources>

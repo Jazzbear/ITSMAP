@@ -28,6 +28,6 @@
     <string name="toastCanceled">Canceled</string>
     <string name="toastSaved">Saved</string>
     <string name="toastFailedSaving">Could not save!</string>
-    <string name="stockPurchaseText">Purchased at: </string>
+    <string name="stockPurchaseText">Purchased at:</string>
     <string name="toastNoChanges">No changes made</string>
 </resources>
