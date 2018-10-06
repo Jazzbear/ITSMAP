@@ -5,17 +5,11 @@
     <string name="stockPurchaseField">Purchased at 8999.9</string>
     <string name="stockPrice">100</string>
     <string name="numberOfStocks">10</string>
-    <string name="sectorType">Technology</string>
     <string name="detailsButtonText">Details</string>
     <string name="editButtonText">Edit</string>
     <string name="backButtonText">Back</string>
     <string name="saveButtonText">Save</string>
     <string name="cancelButtonText">Cancel</string>
-    <!--<string-array name="sectors_array">-->
-        <!--<item>Technology</item>-->
-        <!--<item>Healthcare</item>-->
-        <!--<item>Basic Materials</item>-->
-    <!--</string-array>-->
     <string name="sectorTech">Technology</string>
     <string name="sectorMats">Materials</string>
     <string name="sectorHealth">Healthcare</string>
@@ -26,4 +20,14 @@
     <string name="nameHint">Input stock name</string>
     <string name="priceHint">Input stock price</string>
     <string name="stocksHint">Input amount of stocks</string>
+    <string name="errorInputName">You need to put in a name</string>
+    <string name="errorInputLengh">Name needs to be at least 4 characters</string>
+    <string name="errorInputPrice">You need to put in a price</string>
+    <string name="errorInputAmount">You need to put in an amount of stocks</string>
+    <string name="toastOk">OK</string>
+    <string name="toastCanceled">Canceled</string>
+    <string name="toastSaved">Saved</string>
+    <string name="toastFailedSaving">Could not save!</string>
+    <string name="stockPurchaseText">Purchased at:</string>
+    <string name="toastNoChanges">No changes made</string>
 </resources>

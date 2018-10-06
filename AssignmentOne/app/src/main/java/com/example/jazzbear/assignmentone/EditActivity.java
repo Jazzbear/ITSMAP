@@ -9,14 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import static com.example.jazzbear.assignmentone.DataContainer.*;
+import static com.example.jazzbear.assignmentone.DataCodes.*;
 
 public class EditActivity extends AppCompatActivity {
 
-    static final String EDITVIEW_SAVED = "editview_is_set";
+//    static final String EDITVIEW_SAVED = "editview_is_set";
     EditText editNameField;
     EditText editPriceField;
     EditText editAmountField;
@@ -25,7 +24,7 @@ public class EditActivity extends AppCompatActivity {
     RadioButton radioButton3;
     Button saveButton;
     Button cancelButton;
-    Stock editStock = new Stock();
+    Stock editStock;
     String sectorValue;
 
     @Override
@@ -33,38 +32,35 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
-        //Get intent from the details activity
-        Intent intentFromDetails = getIntent();
-        //Take out the stock object via. the parceable object class
-        editStock = intentFromDetails.getParcelableExtra(STOCKOBJECT_EXTRA);
+        //Recovering the instance state.
+        if (savedInstanceState != null) {
+            editStock = savedInstanceState.getParcelable(STOCK_STATE);
+        } else {
+            //Take out from the intent, the stock object via. the parcelable object class.
+            editStock = getIntent().getParcelableExtra(STOCKOBJECT_EXTRA);
+        }
 
         //Init view elements
         editNameField = findViewById(R.id.stockNameField);
         editPriceField = findViewById(R.id.priceField);
         editAmountField = findViewById(R.id.stockAmountField);
-        sectorValue = editStock.getStockSector();
         radioButton1 = findViewById(R.id.editRadio1);
         radioButton2 = findViewById(R.id.editRadio2);
         radioButton3 = findViewById(R.id.editRadio3);
         saveButton = findViewById(R.id.saveBtn);
         cancelButton = findViewById(R.id.cancelBtn);
+        sectorValue = editStock.getStockSector();
 
-        //Recovering the instance state.
-        if (savedInstanceState != null) {
-            editStock = savedInstanceState.getParcelable(EDITVIEW_SAVED);
-            assert editStock != null;
-            updateEditUI(editStock);
-        } else {
-            updateEditUI(editStock);
-        }
-        //Click event listerner for savebutton
+        updateEditUI();
+
+        //Click event listener for save button
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveChanges();
             }
         });
-        //Click event listerner for cancelButton
+        //Click event listener for cancelButton
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,19 +69,46 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
+    private void updateEditUI() {
+        //update the ui elements with the new info.
+        editNameField.setText(editStock.getStockName());
+        editPriceField.setText(Double.toString(editStock.getStockPrice()));
+        editAmountField.setText(Integer.toString(editStock.getStockAmount()));
+        setRadioButtons();
+    }
+
+    private void setRadioButtons() {
+        //Get the correct string resources so they fit with the locale.
+        String techSector = getResources().getString(R.string.sectorTech);
+        String materialSector = getResources().getString(R.string.sectorMats);
+        String healthSector = getResources().getString(R.string.sectorHealth);
+
+        //used this as inspiration: https://stackoverflow.com/questions/12832456/radio-buttons-set-checked-state-through-code
+        if(sectorValue != null) {
+            if (sectorValue.equalsIgnoreCase(techSector)) {
+                radioButton1.setChecked(true);
+            } else if (sectorValue.equalsIgnoreCase(materialSector)) {
+                radioButton2.setChecked(true);
+            } else if (sectorValue.equalsIgnoreCase(healthSector)) {
+                radioButton3.setChecked(true);
+            }
+        }
+    }
+
     private void cancelChanges() {
+        // No changes, so return to the DetailsActivity view
         setResult(RESULT_CANCELED);
         finish();
     }
 
     private void saveChanges() {
-        if (checkFieldsAreValid() == true) {
+        if (checkFieldsAreValid()) {
             getChanges();
             Intent editResult = new Intent().putExtra(STOCKOBJECT_EXTRA, editStock);
             setResult(RESULT_OK, editResult);
             finish();
         } else {
-            toast("Could not save!");
+            toast(getResources().getString(R.string.toastFailedSaving));
         }
     }
 
@@ -98,32 +121,25 @@ public class EditActivity extends AppCompatActivity {
         //And this https://stackoverflow.com/questions/6538709/edittext-seterror-with-no-message-just-the-icon
         if (nameUserInput.matches("")) {
             editNameField.requestFocus();
-            editNameField.setError("You need to input a name");
+            editNameField.setError(getResources().getString(R.string.errorInputName));
             return false;
-        } else if (nameUserInput.length() < 4) {
+        }
+        if (nameUserInput.length() < 4) {
             editNameField.requestFocus();
-            editNameField.setError("Name needs to be at least 4 characters");
+            editNameField.setError(getResources().getString(R.string.errorInputLengh));
             return false;
         }
         if (priceUserInput.matches("")) {
             editPriceField.requestFocus();
-            editPriceField.setError("You need to input a price");
+            editPriceField.setError(getResources().getString(R.string.errorInputPrice));
             return false;
         }
         if (amountUserInput.matches("")) {
             editAmountField.requestFocus();
-            editAmountField.setError("You need to input an amount of stocks");
+            editAmountField.setError(getResources().getString(R.string.errorInputAmount));
             return false;
         }
         return true;
-    }
-
-    private void updateEditUI(Stock input) {
-        //update the ui elements with the new info.
-        editNameField.setText(input.getStockName());
-        editPriceField.setText(Double.toString(input.getStockPrice()));
-        editAmountField.setText(Integer.toString(input.getStockAmount()));
-        setRadioButtons();
     }
 
     private void getChanges() {
@@ -131,25 +147,6 @@ public class EditActivity extends AppCompatActivity {
         editStock.setStockPrice(Double.parseDouble(editPriceField.getText().toString()));
         editStock.setStockAmount(Integer.parseInt(editAmountField.getText().toString()));
         editStock.setStockSector(sectorValue);
-    }
-
-    private void setRadioButtons() {
-        //Get the correct string resources so they fit with the locale.
-        Resources res = getResources();
-        String techSector = res.getString(R.string.sectorTech);
-        String materialSector = res.getString(R.string.sectorMats);
-        String healthSector = res.getString(R.string.sectorHealth);
-
-        //used this as inspiration: https://stackoverflow.com/questions/12832456/radio-buttons-set-checked-state-through-code
-        if(sectorValue != null) {
-            if (sectorValue.equalsIgnoreCase(techSector)) {
-                radioButton1.setChecked(true);
-            } else if (sectorValue.equalsIgnoreCase(materialSector)) {
-                radioButton2.setChecked(true);
-            } else if (sectorValue.equalsIgnoreCase(healthSector)) {
-                radioButton3.setChecked(true);
-            }
-        }
     }
 
     public void onRadioButtonClicked(View view) {
@@ -183,13 +180,14 @@ public class EditActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        getChanges(); // Get changes before saving so that the editStock object is up to date.
-        toast("State saved");
         /*Its fine here that we just saved the stock even with empty fields,
-        * because it is never parsed back to details on cancel, and saveChanges will
-        * never allow empty fields.*/
-        outState.putParcelable(EDITVIEW_SAVED, editStock);
+         * because it is never parsed back to details on cancel, and saveChanges will
+         * never allow empty fields.*/
+        outState.putParcelable(STOCK_STATE, editStock);
+        getChanges(); // Get changes before saving so that the editStock object is up to date.
+        super.onSaveInstanceState(outState);
+//        toast("State saved"); // For testing
+
     }
 
     private void toast(String input) {
