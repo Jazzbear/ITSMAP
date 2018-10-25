@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">I_will_be_back_ground</string>
+    <string name="err_bg_service_result">ERROR: could not retrieve result</string>
+    <string name="notification_title">Derp notify</string>
+    <string name="notification_message">Started the service that runs in the foreground</string>
+    <string name="ticker_text">An intent service for handling tasks</string>
+    <string name="lbl_bg_service">Background Service:</string>
+    <string name="btn_start_bg_service">Start</string>
+    <string name="btn_bg_service_stop">Stop</string>
+    <string name="lbl_bound_service">Bound Counting Service:</string>
+    <string name="btn_bind_counting_service">Bind</string>
+    <string name="btn_unbind_counting_service">Unbind</string>
+    <string name="btn_get_count">Get count</string>
+    <string name="lbl_intent_service">Intent Service</string>
+    <string name="btn_foo">FOO</string>
+    <string name="btn_baz">BAZ</string>
+    <string name="btn_exit">Exit</string>
+    <string name="service1">A started service that runs in the background</string>
+    <string name="service2">A bound service - that activities can bind to</string>
+    <string name="service3">An intent service for handling tasks</string>
+
 </resources>
