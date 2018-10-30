@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MyWebAppSolutions</string>
+    <string name="checkConnectBtn">CHECK</string>
+    <string name="checkAllConnectionsBtn">CHECK ALL</string>
+    <string name="weathTextView">Get Aarhus Weather</string>
+    <string name="btn_check_net">Check Network</string>
+    <string name="btn_send_server">Send Request</string>
+    <string name="btn_convert_json">Process JSON</string>
+</resources>
