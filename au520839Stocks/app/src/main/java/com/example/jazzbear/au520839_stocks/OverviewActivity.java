@@ -10,17 +10,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.jazzbear.au520839_stocks.Models.Stock;
 import com.example.jazzbear.au520839_stocks.Utils.Globals;
+
+import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
 
     //    static final String OVERVIEW_SAVED = "overview_is_set";
-    TextView overviewStockName;
-    TextView stockPurchasePrice;
+    TextView overviewStockName, stockPurchasePrice, responseView;
     ImageView imgView;
-    Button detailsButton;
+    Button detailsButton, testBtn, refreshBtn;
     Stock stock;
+
+    // Request queue for volley
+    RequestQueue rQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +57,7 @@ public class OverviewActivity extends AppCompatActivity {
         stockPurchasePrice = findViewById(R.id.overviewPurchased);
         detailsButton = findViewById(R.id.overviewButton);
         imgView = findViewById(R.id.imageView);
+        responseView = findViewById(R.id.txtResponse);
 
         updateUI();
 
@@ -54,6 +65,22 @@ public class OverviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 detailsButtonClicked();
+            }
+        });
+
+        testBtn = findViewById(R.id.testBtn);
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testRequestUrl();
+            }
+        });
+
+        refreshBtn = findViewById(R.id.getStocksBtn);
+        refreshBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendStockRequest();
             }
         });
     }
@@ -116,8 +143,60 @@ public class OverviewActivity extends AppCompatActivity {
         outState.putParcelable(Globals.STOCK_STATE, stock);
     }
 
+    private void testRequestUrl() {
+        List<String> symbolList = Globals.stockSymbolList;
+        int count = 0;
+        StringBuilder csvList = new StringBuilder();
+        for (String s : symbolList) {
+            csvList.append(s);
+            // Check if its the last item in the list, if not append a comma
+            if (count++ != symbolList.size() -1 ) {
+                csvList.append(",");
+            }
+        }
+
+        toast(Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING);
+    }
+
+    private void sendStockRequest() {
+        // send request using volley
+        if (rQueue == null ) {
+            // Instantiate new request que if one doesn't exist.
+            rQueue = Volley.newRequestQueue(this);
+        }
+        // get the list of symbols
+        List<String> symbolList = Globals.stockSymbolList;
+        int count = 0; // iterator
+
+        StringBuilder csvList = new StringBuilder();
+        for (String s : symbolList) {
+            csvList.append(s);
+            // Check if its the last item in the list, if not append a comma
+            if (count++ != symbolList.size() -1 ) {
+                csvList.append(",");
+            }
+        }
+
+        String callUrl = Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, callUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        responseView.setText(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                responseView.setText("The request failed");
+            }
+        });
+
+        rQueue.add(stringRequest);
+    }
+
     // Used toasts for debugging
     private void toast(String input) {
-        Toast.makeText(this, input, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, input, Toast.LENGTH_LONG).show();
     }
 }

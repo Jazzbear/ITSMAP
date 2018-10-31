@@ -107,8 +107,7 @@ public class IntentServiceForOffloadingTasks extends IntentService {
      * parameters.
      */
     private void handleActionBaz(String param1, String param2) {
-
-
+        // And also here. The handle methods for foo and baz are the only places we edit the code.
         if(param1==null){
             param1 = "undefined";
         }

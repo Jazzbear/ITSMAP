@@ -24,7 +24,9 @@ public class BackgroundService extends Service {
 
 //    private static final String CHANNEL_DEFAULT_IMPORTANCE = LOW
 
+    // private boolean we set when the service is started, so we don't attempt to start it twice.
     private boolean started = false;
+    // variable used for defining the wait time for the thread
     private long wait;
     private static final long LOOP_WAIT_TIME = 20*1000; // wait time = 20 seconds in milliseconds
 
