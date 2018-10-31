@@ -1,0 +1,4 @@
+DataStorageDemo2.2 og SituationRoom2.2 er i bund og grund det samme projekt.
+Dog løst på hver sin måde. DataStorageDemo2.2 er løsningen med SQLite database.
+SituationRoom2.2 er med Room. Der er ikke rigtig grund til at bruge SQLite da Room,
+giver os et nemmere og rimelig lightweight framework til at arbejde med SQLite.
