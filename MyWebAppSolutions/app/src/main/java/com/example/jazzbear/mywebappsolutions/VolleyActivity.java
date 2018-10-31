@@ -20,14 +20,19 @@ import com.example.jazzbear.mywebappsolutions.utils.GlobalConstants;
 import com.example.jazzbear.mywebappsolutions.utils.NetworkChecker;
 import com.example.jazzbear.mywebappsolutions.utils.WeatherJsonParser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VolleyActivity extends AppCompatActivity {
     // don't forget to use volley it needs to be implemented in the app manifest
 
-    Button btnCheckConnect, btnCheckAll, btnSendRequest, btnParseJson, btnSwitch;
+    Button btnCheckConnect, btnCheckAll, btnSendRequest, btnParseJson, btnSwitch, btnParseArray;
     TextView responseView, jsonResponseView;
 
     // we need a request que for volley:
     RequestQueue rQueue;
+    List<String> symbolList;
+    String jsonResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +63,8 @@ public class VolleyActivity extends AppCompatActivity {
         btnSendRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendWeatherRequest();
+//                sendWeatherRequest();
+                sendStockRequest();
             }
         });
 
@@ -70,7 +76,8 @@ public class VolleyActivity extends AppCompatActivity {
                 // and we have the response body in the text view.
                 if (responseView.getText().toString() != null) {
                     //try to interpret JSON
-                    interpretWeatherJSON(responseView.getText().toString());
+//                    interpretWeatherJSON(responseView.getText().toString());
+                    secondParseMethod(responseView.getText().toString());
                 }
             }
         });
@@ -85,6 +92,14 @@ public class VolleyActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        btnParseArray = findViewById(R.id.btnJsonArray);
+        btnParseArray.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void checkNetworkStatus() {
@@ -97,34 +112,78 @@ public class VolleyActivity extends AppCompatActivity {
         Toast.makeText(this, status, Toast.LENGTH_LONG).show();
     }
 
-    private void sendWeatherRequest() {
+//    private void sendWeatherRequest() {
+//        // send request using volley
+//        if (rQueue == null ) {
+//            // Instantiate new request que if one doesn't exist.
+//            rQueue = Volley.newRequestQueue(this);
+//        }
+//
+//        String url = GlobalConstants.WEATHER_API_CALL; //the http url volley uses
+//
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        responseView.setText(response);
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                responseView.setText("The request failed!");
+//            }
+//        });
+//
+//        // Fire the request by adding it to the request queue.
+//        rQueue.add(stringRequest);
+//    }
+
+    private void sendStockRequest() {
         // send request using volley
         if (rQueue == null ) {
             // Instantiate new request que if one doesn't exist.
             rQueue = Volley.newRequestQueue(this);
         }
+        // get the list of symbols
+//        List<String> symbolList = GlobalConstants.stockSymbolList;
+        symbolList = GlobalConstants.stockSymbolList;
+        int count = 0; // iterator
 
-        String url = GlobalConstants.WEATHER_API_CALL; //the http url volley uses
+        StringBuilder csvList = new StringBuilder();
+        for (String s : symbolList) {
+            csvList.append(s);
+            // Check if its the last item in the list, if not append a comma
+            if (count++ != symbolList.size() -1 ) {
+                csvList.append(",");
+            }
+        }
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        String callUrl = GlobalConstants.STOCK_MARKET_STRING + csvList + GlobalConstants.STOCK_QUOTE_FILTER_STRING;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, callUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         responseView.setText(response);
+                        jsonResponse = response;
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                responseView.setText("The request failed!");
+                responseView.setText("The request failed");
             }
         });
 
-        // Fire the request by adding it to the request queue.
         rQueue.add(stringRequest);
     }
 
     //attempt to decode the json response from weather server
-    public void interpretWeatherJSON(String jsonResonse){
-        jsonResponseView.setText(WeatherJsonParser.parseCityWeatherJsonWithGson(jsonResonse));
+    public void interpretWeatherJSON(String jsonResp){
+        jsonResponseView.setText(WeatherJsonParser.parseCityWeatherJsonWithGson(jsonResp));
+    }
+
+    public void secondParseMethod(String jsonResp) {
+        // TODO: Here we need to split the json response string into sperate object strings so i can map them seperately
+        jsonResponseView.setText(WeatherJsonParser.parseCityWeatherJson(jsonResp));
     }
 }

@@ -1,5 +1,7 @@
 package com.example.jazzbear.mywebappsolutions.utils;
 
+import android.util.Log;
+
 import com.example.jazzbear.mywebappsolutions.models.CityWeather;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,13 +24,32 @@ public class WeatherJsonParser {
             JSONObject cityWeatherJson = new JSONObject(jsonString);
             String name = cityWeatherJson.getString("name");
             JSONObject measurements = cityWeatherJson.getJSONObject("main");
-            weatherString = name + " " + measurements.toString();
+            Double temp, pressure, humidity;
+            temp = measurements.getDouble("temp");
+            weatherString = name + " " + temp;
+            Log.d(GlobalConstants.CONNECT_LOG, weatherString);
             // measurements.getJSONObject(0).getJSONArray("weather").getJSONObject(0).getString("main") + " : " +
             // measurements.getJSONObject(0).getJSONArray("weather").getJSONObject(0).getString("description");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return weatherString;
+    }
+
+    public static String parseStockInfo(String jsonString) {
+        String stockString = "Derp";
+        try {
+            JSONObject stockInfo = new JSONObject(jsonString);
+//            JSONObject quote = stockInfo.getJSONObject().get
+            // TODO: NEEDS TO MAP THE OBJECT PROPERTIES TO AN OBJECT.
+            // TODO: ALSO MAKE A PARSER CLASS IN THE PROJECT AND WORK ON IT THERE IN STEAD.
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(GlobalConstants.CONNECT_LOG, "Shit went wrong.");
+        }
+
+        return stockString;
     }
 
     //example of parsing with Gson - note that the Gson parser uses the model object CityWeather,

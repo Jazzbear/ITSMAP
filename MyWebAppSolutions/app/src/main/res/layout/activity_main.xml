@@ -114,4 +114,14 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/btnCheckNetwork"
         app:layout_constraintStart_toEndOf="@+id/btnCheckNetwork" />
 
+    <Button
+        android:id="@+id/btnJsonArray"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:text="PROCESS JSON ARRAY"
+        app:layout_constraintBaseline_toBaselineOf="@+id/btnSwitchMode"
+        app:layout_constraintStart_toEndOf="@+id/btnSwitchMode" />
+
 </android.support.constraint.ConstraintLayout>
