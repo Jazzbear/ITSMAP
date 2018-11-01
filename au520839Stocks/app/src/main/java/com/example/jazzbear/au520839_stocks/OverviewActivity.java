@@ -157,20 +157,24 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     private void testRequestUrl() {
-//        List<String> symbolList = Globals.stockSymbolList;
-//        int count = 0;
-//        StringBuilder csvList = new StringBuilder();
-//        for (String s : symbolList) {
-//            csvList.append(s);
-//            // Check if its the last item in the list, if not append a comma
-//            if (count++ != symbolList.size() -1 ) {
-//                csvList.append(",");
-//            }
-//        }
-//
-//        toast(Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING);
-        String callUrl = Globals.STOCK_MARKET_STRING + "TSLA" + Globals.STOCK_QUOTE_FILTER_STRING;
-        toast(callUrl);
+        // TODO: WHEN THE USER OR ONE SELF ADDS MORE SYMBOLS, ADD IT TO THE SYMBOL LIST.
+        // TODO: THAT WAY WE HAVE A ITTERABLE LIST TO GO THROUGH.
+        // TODO: MIGHT NEED TO BE MODIFIED SO THAT WE CAN REMOVE STUFF FROM IT ASWELL.
+        List<String> symbolList = Globals.stockSymbolList;
+//        symbolList.add("MSFT");
+        int count = 0;
+        StringBuilder csvList = new StringBuilder();
+        for (String s : symbolList) {
+            csvList.append(s);
+            // Check if its the last item in the list, if not append a comma
+            if (count++ != symbolList.size() -1 ) {
+                csvList.append(",");
+            }
+        }
+
+        toast(Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING);
+//        String callUrl = Globals.STOCK_MARKET_STRING + "TSLA" + Globals.STOCK_QUOTE_FILTER_STRING;
+//        toast(callUrl);
     }
 
     private void sendStockRequest() {
@@ -179,34 +183,42 @@ public class OverviewActivity extends AppCompatActivity {
             // Instantiate new request que if one doesn't exist.
             rQueue = Volley.newRequestQueue(this);
         }
+
+
+
         // get the list of symbols
-//        List<String> symbolList = Globals.stockSymbolList;
-//        int count = 0; // iterator
-//
-//        StringBuilder csvList = new StringBuilder();
-//        for (String s : symbolList) {
-//            csvList.append(s);
-//            // Check if its the last item in the list, if not append a comma
-//            if (count++ != symbolList.size() -1 ) {
-//                csvList.append(",");
-//            }
-//        }
+        final List<String> symbolList = Globals.stockSymbolList;
+        int count = 0; // iterator
 
-//        String callUrl = Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING;
-        final String symbol = "TSLA";
-        String callUrl = Globals.STOCK_MARKET_STRING + symbol + Globals.STOCK_QUOTE_FILTER_STRING;
+        StringBuilder csvList = new StringBuilder();
+        for (String s : symbolList) {
+            csvList.append(s);
+            // Check if its the last item in the list, if not append a comma
+            if (count++ != symbolList.size() -1 ) {
+                csvList.append(",");
+            }
+        }
 
+        String callUrl = Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING;
+//        final String symbol = "TSLA";
+//        String callUrl = Globals.STOCK_MARKET_STRING + symbol + Globals.STOCK_QUOTE_FILTER_STRING;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, callUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 //                        responseView.setText(response);
-                        StockQuote responseQuote = StockJsonParser.parseSingleStockJson(symbol, response);
-                        String responseText = "Here is the response:\n" + responseQuote.getCompanyName()
-                                + "\n" + responseQuote.getLatestValue();
-                        responseView.setText(responseText);
-//                        responseView.setText("Here is the reponse info:\n" + responseQuote.getCompanyName());
+                        List<StockQuote> listOfResponseQuotes = StockJsonParser.parseSingleStockJson(symbolList, response);
+                        StringBuilder listString = new StringBuilder();
+                        for (StockQuote quote : listOfResponseQuotes) {
+                            String responseString = "Response: \n" + quote.getCompanyName() + "\n" + quote.getLatestValue() + "\n\n";
+                            listString.append(responseString);
+                        }
+
+//                        String responseText = "Here is the response:\n" + listOfResponseQuotes.get(0).getCompanyName()
+//                                + "\n" + listOfResponseQuotes.get(0).getLatestValue();
+                        responseView.setText(listString);
+//                        responseView.setText("Here is the reponse info:\n" + listOfResponseQuotes.getCompanyName());
 //                        interpretStockJson(response);
                         Log.d(Globals.STOCK_LOG, response);
                     }
