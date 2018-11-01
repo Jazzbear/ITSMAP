@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,7 +18,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.jazzbear.au520839_stocks.Models.Stock;
+import com.example.jazzbear.au520839_stocks.Models.StockQuote;
 import com.example.jazzbear.au520839_stocks.Utils.Globals;
+import com.example.jazzbear.au520839_stocks.Utils.StockJsonParser;
 
 import java.util.List;
 
@@ -26,7 +29,7 @@ public class OverviewActivity extends AppCompatActivity {
     //    static final String OVERVIEW_SAVED = "overview_is_set";
     TextView overviewStockName, stockPurchasePrice, responseView;
     ImageView imgView;
-    Button detailsButton, testBtn, refreshBtn;
+    Button detailsButton, testBtn, refreshBtn, translateBtn;
     Stock stock;
 
     // Request queue for volley
@@ -75,6 +78,16 @@ public class OverviewActivity extends AppCompatActivity {
                 testRequestUrl();
             }
         });
+
+//        translateBtn = findViewById(R.id.jsonTranslateBtn);
+//        translateBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (responseView.getText().toString() != null) {
+//                    interpretStockJson(responseView.getText().toString());
+//                }
+//            }
+//        });
 
         refreshBtn = findViewById(R.id.getStocksBtn);
         refreshBtn.setOnClickListener(new View.OnClickListener() {
@@ -144,18 +157,20 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     private void testRequestUrl() {
-        List<String> symbolList = Globals.stockSymbolList;
-        int count = 0;
-        StringBuilder csvList = new StringBuilder();
-        for (String s : symbolList) {
-            csvList.append(s);
-            // Check if its the last item in the list, if not append a comma
-            if (count++ != symbolList.size() -1 ) {
-                csvList.append(",");
-            }
-        }
-
-        toast(Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING);
+//        List<String> symbolList = Globals.stockSymbolList;
+//        int count = 0;
+//        StringBuilder csvList = new StringBuilder();
+//        for (String s : symbolList) {
+//            csvList.append(s);
+//            // Check if its the last item in the list, if not append a comma
+//            if (count++ != symbolList.size() -1 ) {
+//                csvList.append(",");
+//            }
+//        }
+//
+//        toast(Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING);
+        String callUrl = Globals.STOCK_MARKET_STRING + "TSLA" + Globals.STOCK_QUOTE_FILTER_STRING;
+        toast(callUrl);
     }
 
     private void sendStockRequest() {
@@ -165,25 +180,35 @@ public class OverviewActivity extends AppCompatActivity {
             rQueue = Volley.newRequestQueue(this);
         }
         // get the list of symbols
-        List<String> symbolList = Globals.stockSymbolList;
-        int count = 0; // iterator
+//        List<String> symbolList = Globals.stockSymbolList;
+//        int count = 0; // iterator
+//
+//        StringBuilder csvList = new StringBuilder();
+//        for (String s : symbolList) {
+//            csvList.append(s);
+//            // Check if its the last item in the list, if not append a comma
+//            if (count++ != symbolList.size() -1 ) {
+//                csvList.append(",");
+//            }
+//        }
 
-        StringBuilder csvList = new StringBuilder();
-        for (String s : symbolList) {
-            csvList.append(s);
-            // Check if its the last item in the list, if not append a comma
-            if (count++ != symbolList.size() -1 ) {
-                csvList.append(",");
-            }
-        }
+//        String callUrl = Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING;
+        final String symbol = "TSLA";
+        String callUrl = Globals.STOCK_MARKET_STRING + symbol + Globals.STOCK_QUOTE_FILTER_STRING;
 
-        String callUrl = Globals.STOCK_MARKET_STRING + csvList + Globals.STOCK_QUOTE_FILTER_STRING;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, callUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        responseView.setText(response);
+//                        responseView.setText(response);
+                        StockQuote responseQuote = StockJsonParser.parseSingleStockJson(symbol, response);
+                        String responseText = "Here is the response:\n" + responseQuote.getCompanyName()
+                                + "\n" + responseQuote.getLatestValue();
+                        responseView.setText(responseText);
+//                        responseView.setText("Here is the reponse info:\n" + responseQuote.getCompanyName());
+//                        interpretStockJson(response);
+                        Log.d(Globals.STOCK_LOG, response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -193,6 +218,12 @@ public class OverviewActivity extends AppCompatActivity {
         });
 
         rQueue.add(stringRequest);
+    }
+
+    public void interpretStockJson(String jsonText) {
+//        StockQuote responseQuote = StockJsonParser.parseSingleStockJson(jsonText);
+//        responseView.setText(responseQuote.getCompanyName());
+//        Log.d(Globals.STOCK_LOG, responseQuote.getCompanyName());
     }
 
     // Used toasts for debugging

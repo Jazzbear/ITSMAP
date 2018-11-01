@@ -76,8 +76,8 @@ public class VolleyActivity extends AppCompatActivity {
                 // and we have the response body in the text view.
                 if (responseView.getText().toString() != null) {
                     //try to interpret JSON
-//                    interpretWeatherJSON(responseView.getText().toString());
-                    secondParseMethod(responseView.getText().toString());
+                    interpretWeatherJSON(responseView.getText().toString());
+//                    secondParseMethod(responseView.getText().toString());
                 }
             }
         });

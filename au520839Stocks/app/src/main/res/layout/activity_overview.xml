@@ -113,4 +113,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtResponse" />
 
+    <Button
+        android:id="@+id/jsonTranslateBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="TRANSLATE"
+        app:layout_constraintEnd_toStartOf="@+id/testBtn"
+        app:layout_constraintStart_toEndOf="@+id/getStocksBtn"
+        app:layout_constraintTop_toBottomOf="@+id/overviewButton" />
+
 </android.support.constraint.ConstraintLayout>
