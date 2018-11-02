@@ -121,6 +121,10 @@ public class MainActivity extends AppCompatActivity {
         // Setup the bound service connection.
         setupConnectionToCountingService();
 
+        // As a reminder the AsyncTask 3 parameters in the definition is params,
+        // progress and result, since we do not need progress update here.
+        // progress is just left as void, since we expect no callback from progress.
+        // But input param and return values are strings.
         @SuppressLint("StaticFieldLeak") AsyncTask<String, String, String> asyncTask = new AsyncTask<String, String, String>() {
             @Override
             protected String doInBackground(String[] strings) {

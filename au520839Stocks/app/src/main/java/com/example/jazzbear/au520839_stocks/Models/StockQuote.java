@@ -1,94 +1,111 @@
 package com.example.jazzbear.au520839_stocks.Models;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+@Entity(indices = {@Index(value = "stockSymbol", unique = true)})
 public class StockQuote implements Parcelable {
-    private String CompanyName;
-    private String StockSymbol;
-    private String PrimaryExchange;
-    private long LatestValue;
-    private String TimeStamp;
-    private double OpeningPrice;
-    private double ClosingPrice;
-    private long ChangePercentage;
+
+    @PrimaryKey(autoGenerate = true)
+    private int uid;
+
+    private String companyName;
+    private String stockSymbol;
+    private String primaryExchange;
+    private long latestValue;
+    private String timeStamp;
+    private double openingPrice;
+    private double closingPrice;
+    private long changePercentage;
 
     public StockQuote() {}
 
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
     public String getCompanyName() {
-        return CompanyName;
+        return companyName;
     }
 
     public void setCompanyName(String companyName) {
-        CompanyName = companyName;
+        this.companyName = companyName;
     }
 
     public String getStockSymbol() {
-        return StockSymbol;
+        return stockSymbol;
     }
 
     public void setStockSymbol(String stockSymbol) {
-        StockSymbol = stockSymbol;
+        this.stockSymbol = stockSymbol;
     }
 
     public String getPrimaryExchange() {
-        return PrimaryExchange;
+        return primaryExchange;
     }
 
     public void setPrimaryExchange(String primaryExchange) {
-        PrimaryExchange = primaryExchange;
+        this.primaryExchange = primaryExchange;
     }
 
     public long getLatestValue() {
-        return LatestValue;
+        return latestValue;
     }
 
     public void setLatestValue(long latestValue) {
-        LatestValue = latestValue;
+        this.latestValue = latestValue;
     }
 
     public String getTimeStamp() {
-        return TimeStamp;
+        return timeStamp;
     }
 
     public void setTimeStamp(String timeStamp) {
-        TimeStamp = timeStamp;
+        this.timeStamp = timeStamp;
     }
 
     public double getOpeningPrice() {
-        return OpeningPrice;
+        return openingPrice;
     }
 
     public void setOpeningPrice(double openingPrice) {
-        OpeningPrice = openingPrice;
+        this.openingPrice = openingPrice;
     }
 
     public double getClosingPrice() {
-        return ClosingPrice;
+        return closingPrice;
     }
 
     public void setClosingPrice(double closingPrice) {
-        ClosingPrice = closingPrice;
+        this.closingPrice = closingPrice;
     }
 
     public long getChangePercentage() {
-        return ChangePercentage;
+        return changePercentage;
     }
 
     public void setChangePercentage(long changePercentage) {
-        ChangePercentage = changePercentage;
+        this.changePercentage = changePercentage;
     }
 
 
     protected StockQuote(Parcel in) {
-        CompanyName = in.readString();
-        StockSymbol = in.readString();
-        PrimaryExchange = in.readString();
-        LatestValue = in.readLong();
-        TimeStamp = in.readString();
-        OpeningPrice = in.readDouble();
-        ClosingPrice = in.readDouble();
-        ChangePercentage = in.readLong();
+        companyName = in.readString();
+        stockSymbol = in.readString();
+        primaryExchange = in.readString();
+        latestValue = in.readLong();
+        timeStamp = in.readString();
+        openingPrice = in.readDouble();
+        closingPrice = in.readDouble();
+        changePercentage = in.readLong();
     }
 
     @Override
@@ -98,14 +115,14 @@ public class StockQuote implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(CompanyName);
-        dest.writeString(StockSymbol);
-        dest.writeString(PrimaryExchange);
-        dest.writeLong(LatestValue);
-        dest.writeString(TimeStamp);
-        dest.writeDouble(OpeningPrice);
-        dest.writeDouble(ClosingPrice);
-        dest.writeLong(ChangePercentage);
+        dest.writeString(companyName);
+        dest.writeString(stockSymbol);
+        dest.writeString(primaryExchange);
+        dest.writeLong(latestValue);
+        dest.writeString(timeStamp);
+        dest.writeDouble(openingPrice);
+        dest.writeDouble(closingPrice);
+        dest.writeLong(changePercentage);
     }
 
     @SuppressWarnings("unused")

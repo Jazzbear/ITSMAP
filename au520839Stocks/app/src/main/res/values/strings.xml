@@ -30,4 +30,9 @@
     <string name="toastFailedSaving">Could not save!</string>
     <string name="stockPurchaseText">Purchased at:</string>
     <string name="toastNoChanges">No changes made</string>
+
+    <!--Service related-->
+    <string name="notifyChannelName" translatable="false">Stock service channel</string>
+    <string name="notifyChannelDescription" translatable="false">Channel used for notifying user of changes to his stock portfolio</string>
+    <string name="service1" translatable="false">A started service that runs in the background</string>
 </resources>

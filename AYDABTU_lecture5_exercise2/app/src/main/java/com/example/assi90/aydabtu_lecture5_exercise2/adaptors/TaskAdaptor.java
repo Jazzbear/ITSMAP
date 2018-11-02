@@ -67,6 +67,8 @@ public class TaskAdaptor extends BaseAdapter {
         if(convertView==null){
             LayoutInflater inflater;
             inflater = LayoutInflater.from(context);
+            // We use the inflater to inflate the listview with each element in the list
+            // produced with the xml defined in tast_list_item.xml.
             convertView = inflater.inflate(R.layout.task_list_item, null);
         }
 

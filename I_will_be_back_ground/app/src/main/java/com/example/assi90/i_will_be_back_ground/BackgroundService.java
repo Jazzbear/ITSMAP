@@ -54,6 +54,8 @@ public class BackgroundService extends Service {
             started = true;
 
             if (runAsForegroundService) {
+                // TODO: implement the pending intent if we want to open the activity by a click on the notification
+                // Ref link: https://developer.android.com/training/notify-user/build-notification#click
 //                Intent notificationIntent = new Intent(BackgroundService.this, MainActivity.class);
 //                PendingIntent pendingIntent =
 //                        PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -67,6 +69,10 @@ public class BackgroundService extends Service {
                     mNotificationManager.createNotificationChannel(mChannel);
                 }
 
+                // NOTE that if we want the notification to hold more info/be long we can
+                // enable expandable notification by adding a style template with setStyle()
+                // link for explanation: https://developer.android.com/training/notify-user/build-notification#builder
+                // and this: https://developer.android.com/training/notify-user/expanded
                 Notification notification =
                         new NotificationCompat.Builder(this, "myChannel")
                                 .setContentTitle(getText(R.string.notification_title))
@@ -85,6 +91,12 @@ public class BackgroundService extends Service {
         } else {
             Log.d(LOG, "Background service onStartCommand - already started!");
         }
+        /* START_STICKY: If the system kills the service after onStartCommand() returns, recreate the service
+         * and call onStartCommand(), but do not redeliver the last intent.
+         * Instead, the system calls onStartCommand() with a null intent unless there are pending
+         * intents to start the service. In that case, those intents are delivered.
+         * This is suitable for media players (or similar services) that are not executing commands
+         * but are running indefinitely and waiting for a job.*/
         return START_STICKY;
 //        return super.onStartCommand(intent, flags, startId);
     }
@@ -96,6 +108,7 @@ public class BackgroundService extends Service {
     }
 
     private void doBackgroundThing(final long waitTimeInMillis) {
+
 
         //create asynch tasks that sleeps for waitTimeMillis ms and then sends broadcast
         @SuppressLint("StaticFieldLeak") AsyncTask<Object, Object, String> task
