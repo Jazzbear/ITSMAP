@@ -35,4 +35,8 @@
     <string name="notifyChannelName" translatable="false">Stock service channel</string>
     <string name="notifyChannelDescription" translatable="false">Channel used for notifying user of changes to his stock portfolio</string>
     <string name="service1" translatable="false">A started service that runs in the background</string>
+
+    <!--Broadcast receiver related-->
+    <string name="err_bg_service_result">ERROR: could not retrieve result</string>
+
 </resources>

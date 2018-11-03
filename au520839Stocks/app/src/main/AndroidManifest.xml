@@ -21,7 +21,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".EditActivity" />
-        <activity android:name=".DetailsActivity"></activity>
+        <activity android:name=".DetailsActivity" />
+
+        <service
+            android:name=".Utils.StockUpdaterService"
+            android:description="@string/service1"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".StockService"
+            android:description="@string/service1"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
 
 </manifest>

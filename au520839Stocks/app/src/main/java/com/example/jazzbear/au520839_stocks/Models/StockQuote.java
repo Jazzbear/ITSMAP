@@ -1,6 +1,5 @@
 package com.example.jazzbear.au520839_stocks.Models;
 
-import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
@@ -16,11 +15,13 @@ public class StockQuote implements Parcelable {
     private String companyName;
     private String stockSymbol;
     private String primaryExchange;
-    private long latestValue;
+    private double purchasedValue;
+    private double latestPrice;
     private String timeStamp;
     private double openingPrice;
     private double closingPrice;
-    private long changePercentage;
+    private double changePercentage;
+    private String sector;
 
     public StockQuote() {}
 
@@ -56,12 +57,20 @@ public class StockQuote implements Parcelable {
         this.primaryExchange = primaryExchange;
     }
 
-    public long getLatestValue() {
-        return latestValue;
+    public double getPurchasedValue() {
+        return purchasedValue;
     }
 
-    public void setLatestValue(long latestValue) {
-        this.latestValue = latestValue;
+    public void setPurchasedValue(double purchasedValue) {
+        this.purchasedValue = purchasedValue;
+    }
+
+    public double getLatestPrice() {
+        return latestPrice;
+    }
+
+    public void setLatestPrice(double latestPrice) {
+        this.latestPrice = latestPrice;
     }
 
     public String getTimeStamp() {
@@ -88,24 +97,33 @@ public class StockQuote implements Parcelable {
         this.closingPrice = closingPrice;
     }
 
-    public long getChangePercentage() {
+    public double getChangePercentage() {
         return changePercentage;
     }
 
-    public void setChangePercentage(long changePercentage) {
+    public void setChangePercentage(double changePercentage) {
         this.changePercentage = changePercentage;
     }
 
+    public String getSector() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
+    }
 
     protected StockQuote(Parcel in) {
         companyName = in.readString();
         stockSymbol = in.readString();
         primaryExchange = in.readString();
-        latestValue = in.readLong();
+        purchasedValue = in.readDouble();
+        latestPrice = in.readDouble();
         timeStamp = in.readString();
         openingPrice = in.readDouble();
         closingPrice = in.readDouble();
-        changePercentage = in.readLong();
+        changePercentage = in.readDouble();
+        sector = in.readString();
     }
 
     @Override
@@ -118,11 +136,13 @@ public class StockQuote implements Parcelable {
         dest.writeString(companyName);
         dest.writeString(stockSymbol);
         dest.writeString(primaryExchange);
-        dest.writeLong(latestValue);
+        dest.writeDouble(purchasedValue);
+        dest.writeDouble(latestPrice);
         dest.writeString(timeStamp);
         dest.writeDouble(openingPrice);
         dest.writeDouble(closingPrice);
-        dest.writeLong(changePercentage);
+        dest.writeDouble(changePercentage);
+        dest.writeString(sector);
     }
 
     @SuppressWarnings("unused")
@@ -137,4 +157,5 @@ public class StockQuote implements Parcelable {
             return new StockQuote[size];
         }
     };
+
 }

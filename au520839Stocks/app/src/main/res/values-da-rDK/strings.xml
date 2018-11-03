@@ -31,4 +31,7 @@
     <string name="toastFailedSaving">Kunne ikke gemmes!</string>
     <string name="stockPurchaseText">Købt for:</string>
     <string name="toastNoChanges">Ingen ændringer foretaget</string>
+
+    <!--Broadcast receiver related-->
+    <string name="err_bg_service_result">ERROR: Fejl kunne ikke hente resultat</string>
 </resources>

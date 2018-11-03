@@ -7,7 +7,7 @@ import android.content.Context;
 
 import com.example.jazzbear.au520839_stocks.Models.StockQuote;
 
-@Database(entities = {StockQuote.class}, version = 1)
+@Database(entities = {StockQuote.class}, version = 2)
 public abstract class StockDatabase extends RoomDatabase {
     public abstract StockQuoteDao stockQuoteDao();
 
