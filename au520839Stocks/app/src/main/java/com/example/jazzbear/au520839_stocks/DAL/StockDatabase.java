@@ -10,10 +10,9 @@ import com.example.jazzbear.au520839_stocks.Models.StockQuote;
 @Database(entities = {StockQuote.class}, version = 2)
 public abstract class StockDatabase extends RoomDatabase {
     public abstract StockQuoteDao stockQuoteDao();
-
     private static volatile StockDatabase INSTANCE;
 
-    public static StockDatabase getDatabase(final Context context) {
+    public static StockDatabase getDatabaseInstance(final Context context) {
         if (INSTANCE == null) {
             synchronized (StockDatabase.class) {
                 INSTANCE = Room.databaseBuilder(context.getApplicationContext(),

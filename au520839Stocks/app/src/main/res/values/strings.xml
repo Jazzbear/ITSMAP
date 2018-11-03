@@ -38,5 +38,7 @@
 
     <!--Broadcast receiver related-->
     <string name="err_bg_service_result">ERROR: could not retrieve result</string>
+    <string name="broadcastActionSingleStock" translatable="false">single_stock_action</string>
+    <string name="broadcastActionMultiStock" translatable="false">multiple_stock_action</string>
 
 </resources>

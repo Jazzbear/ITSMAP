@@ -18,16 +18,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-
 import com.example.jazzbear.au520839_stocks.DAL.StockDatabase;
 import com.example.jazzbear.au520839_stocks.Models.Stock;
 import com.example.jazzbear.au520839_stocks.Models.StockQuote;
 import com.example.jazzbear.au520839_stocks.Utils.StockJsonParser;
-import com.example.jazzbear.au520839_stocks.Utils.StockUpdaterService;
 import com.example.jazzbear.au520839_stocks.Utils.Globals;
 
 import com.facebook.stetho.Stetho;
+
 import java.util.List;
 
 import static com.example.jazzbear.au520839_stocks.Utils.Globals.STOCK_LOG;
@@ -48,7 +46,7 @@ public class OverviewActivity extends AppCompatActivity {
 //    private long task_wait_time = 30*1000;
 
     // Request queue for volley
-    RequestQueue rQueue;
+//    RequestQueue rQueue;
     StockDatabase db;
 
     // ############ LIFE CYCLE METHODS ###############
@@ -115,9 +113,7 @@ public class OverviewActivity extends AppCompatActivity {
         sendRequestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startStockUpdaterService();
-                Globals.STOCK_SYMBOL = "AMD";
-                stockService.requestSingleStock(Globals.STOCK_SYMBOL);
+                stockService.requestSingleStock("AMD");
             }
         });
     }
@@ -125,6 +121,8 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        // Maybe the registration of filters should be in create?
+        // For example if the app is in half view we still want the updates
         Log.d(STOCK_LOG, "registering receivers");
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(StockService.LIST_OF_STOCKS_RESULT_BROADCAST);
@@ -172,7 +170,7 @@ public class OverviewActivity extends AppCompatActivity {
         // connect to service
         stockServiceConnection = new ServiceConnection() {
             @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
+            public void onServiceConnected(ComponentName className, IBinder service) {
                 // This is called when the connection with the service has been
                 // established, giving us the service object we can use to
                 // interact with the service.  Because we have bound to a explicit
@@ -180,17 +178,17 @@ public class OverviewActivity extends AppCompatActivity {
                 // cast its IBinder to a concrete class and directly access it.
                 //ref: http://developer.android.com/reference/android/app/Service.html
                 // and also ref: https://developer.android.com/guide/components/bound-services
-                stockService = ((StockService.StockServiceBinder)service).getService();
+                stockService = ((StockService.StockServiceBinder) service).getService();
                 Log.d(Globals.STOCK_LOG, "Stock service connected");
             }
 
             @Override
-            public void onServiceDisconnected(ComponentName name) {
+            public void onServiceDisconnected(ComponentName className) {
                 // This is called when the connection with the service has been
-                //                // unexpectedly disconnected -- that is, its process crashed.
-                //                // Because it is running in our same process, we should never
-                //                // see this happen.
-                //                //ref: http://developer.android.com/reference/android/app/Service.html
+                // unexpectedly disconnected -- that is, its process crashed.
+                // Because it is running in our same process, we should never
+                // see this happen.
+                //ref: http://developer.android.com/reference/android/app/Service.html
                 stockService = null;
                 Log.d(Globals.STOCK_LOG, "Stock service disconnected");
             }
@@ -201,10 +199,10 @@ public class OverviewActivity extends AppCompatActivity {
     // TODO: needs to be re-implemented once stock service is done.
     // For starting stock service
     private void startStockUpdaterService() {
-        Intent startServiceIntent = new Intent(OverviewActivity.this, StockUpdaterService.class);
+//        Intent startServiceIntent = new Intent(OverviewActivity.this, StockUpdaterService.class);
         // this intent needs include the stocks we want to work on
 //        startServiceIntent.putExtra(StockUpdaterService.EXTRA_TASK_TIME_MS, taskTime);
-        startService(startServiceIntent);
+//        startService(startServiceIntent);
     }
 
     private void detailsButtonClicked() {
@@ -272,7 +270,7 @@ public class OverviewActivity extends AppCompatActivity {
         for (String s : symbolList) {
             csvList.append(s);
             // Check if its the last item in the list, if not append a comma
-            if (count++ != symbolList.size() -1 ) {
+            if (count++ != symbolList.size() - 1) {
                 csvList.append(",");
             }
         }
@@ -282,7 +280,7 @@ public class OverviewActivity extends AppCompatActivity {
 
 
     private void addTaskList(List<StockQuote> stockList) {
-        db = StockDatabase.getDatabase(OverviewActivity.this);
+        db = StockDatabase.getDatabaseInstance(OverviewActivity.this);
         db.stockQuoteDao().insertStockList(stockList);
     }
 
@@ -300,10 +298,12 @@ public class OverviewActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(STOCK_LOG, "Broadcast received from bg service");
+            //First get the intent action code. Then handle it accordingly
+            String intentCode = intent.getStringExtra(StockService.BROADCAST_ACTION_RESULT_CODE);
 
-
-            String intentCode = intent.getStringExtra(StockService.EXTRA_INTENT_CODE);
-            if (intentCode.equalsIgnoreCase("111")) {
+            if (intentCode.equalsIgnoreCase(getResources().getString(R.string.broadcastActionSingleStock))) {
+                //TODO: Create another nested if that encapsulates this.
+                //TODO: In case we get a RESULT_FAILURE. Broadcast a failure toast
                 String stockResult = intent.getStringExtra(StockService.EXTRA_STOCK_RESULT);
                 Log.d(STOCK_LOG, "Here is the intent stock result: " + stockResult + "\n");
                 String stockSymbol = intent.getStringExtra(StockService.EXTRA_STOCK_CALL_SYMBOL);
@@ -318,7 +318,7 @@ public class OverviewActivity extends AppCompatActivity {
                 handleStockResult(stockSymbol, stockResult);
             }
 
-            if (intentCode.equalsIgnoreCase("222")) {
+            if (intentCode.equalsIgnoreCase(getResources().getString(R.string.broadcastActionMultiStock))) {
                 // A list of stocks was broadcast.
                 String stockListResult = intent.getStringExtra(StockService.EXTRA_STOCK_LIST_RESULT);
                 if (stockListResult == null) {
@@ -328,17 +328,6 @@ public class OverviewActivity extends AppCompatActivity {
                 // Handle the broadcast
                 handleStockListResult(stockListResult);
             }
-
-
-//            handleStockListResult(stockListResult);
-
-//            handleStockListResult(stockListResult);
-
-//            if (stockResult != null) {
-//                handleStockListResult(stockResult);
-//            } else if (stockListResult != null) {
-//                handleStockListResult(stockListResult);
-//            }
         }
     };
 
@@ -366,7 +355,7 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     // TODO: Midlertidig broadcast handler for testing
-    private void handleStockListResult(String result){
+    private void handleStockListResult(String result) {
 //        toast("Got result from background service:\n" + result);
         List<StockQuote> listOfResponseQuotes =
                 StockJsonParser.parseStockListJson(Globals.stockSymbolList, result);
@@ -398,7 +387,6 @@ public class OverviewActivity extends AppCompatActivity {
             serviceBound = false;
         }
     }
-
 
 
     // Used toasts for debugging

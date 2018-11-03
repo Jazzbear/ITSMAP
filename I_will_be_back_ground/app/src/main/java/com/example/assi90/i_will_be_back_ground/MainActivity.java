@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setupConnectionToCountingService();
+
         startBtn = findViewById(R.id.btnStart);
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         txtToUpdate = findViewById(R.id.helperTextView);
 
         // Setup the bound service connection.
-        setupConnectionToCountingService();
+
 
         // As a reminder the AsyncTask 3 parameters in the definition is params,
         // progress and result, since we do not need progress update here.
@@ -158,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        // register the intent receiver so we can catch broadcasts
         Log.d(MAIN_LOG, "registering receivers");
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(BackgroundService.BROADCAST_BACKGROUND_SERVICE_RESULT_ACTION);
