@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">au520839 Stocks</string>
-    <string name="overviewHeader">Min aktie:</string>
+    <string name="overviewHeader">Min aktier:</string>
     <string name="stockName">Shire Inc.</string>
     <string name="stockPurchaseField">Købt for 8999.9</string>
     <string name="stockPrice">100</string>
     <string name="numberOfStocks">10</string>
+    <!--Buttons text-->
     <string name="detailsButtonText">Detaljer</string>
     <string name="editButtonText">Ændre</string>
     <string name="backButtonText">Tilbage</string>
     <string name="saveButtonText">Gem</string>
     <string name="cancelButtonText">Annuller</string>
+    <string name="deleteButtonText">Slet</string>
+
     <string name="sectorTech">Teknologi</string>
     <string name="sectorMats">Materialer</string>
     <string name="sectorHealth">Sunhedsplejning</string>
@@ -32,6 +35,15 @@
     <string name="stockPurchaseText">Købt for:</string>
     <string name="toastNoChanges">Ingen ændringer foretaget</string>
 
+    <!--New strings-->
+    <string name="addStockBtnString">Tilføj Aktie</string>
+    <string name="refreshBtnString">Opdater</string>
+    <string name="dialogSymbolHelperText">Indtast aktie symbol</string>
+    <string name="dialogTitle">Tilføj en ny aktie</string>
+    <string name="positiveDialogBtnText">Tilføj</string>
+    <string name="negativeDialogBtnText">Annuller</string>
+
     <!--Broadcast receiver related-->
     <string name="err_bg_service_result">ERROR: Fejl kunne ikke hente resultat</string>
+
 </resources>

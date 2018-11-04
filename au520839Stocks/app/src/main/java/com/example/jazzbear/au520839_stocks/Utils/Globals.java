@@ -6,6 +6,7 @@ import java.util.List;
 public class Globals {
     public static final int DETAILS_REQUEST = 101;
     public static final int EDIT_REQUEST = 201;
+    public static final int DELETE_RESULT = 999;
     public static final String STOCKOBJECT_EXTRA = "com.jazzbear.stockobject";
     public static final String STOCK_STATE = "state_of_stock";
     public static final String STOCK_LOG = "STOCK_DEBUG_LOGGING";

@@ -12,7 +12,7 @@ import java.util.List;
 public class StockJsonParser {
 
     // Method for parsing a single json stock object to a stockQuote object.
-    public static StockQuote parseSingleStockJson(String stockSymbol, String jsonInput) {
+    public static StockQuote parseSingleStockJson(String jsonInput, String stockSymbol) {
         Log.d(Globals.STOCK_LOG, stockSymbol);
         StockQuote stockQuote = new StockQuote(); // we make a new stock object
         try {
@@ -28,24 +28,19 @@ public class StockJsonParser {
             stockQuote.setPrimaryExchange(jsonQuote.getString("primaryExchange"));
             stockQuote.setLatestPrice(jsonQuote.getDouble("latestPrice"));
             stockQuote.setTimeStamp(jsonQuote.getString("latestTime"));
-            stockQuote.setOpeningPrice(jsonQuote.getDouble("open"));
-            stockQuote.setClosingPrice(jsonQuote.getDouble("close"));
-            stockQuote.setChangePercentage(jsonQuote.getDouble("changePercent"));
             stockQuote.setSector(jsonQuote.getString("sector"));
-
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d(Globals.STOCK_LOG, "Something went wrong with single stock request:\n" + e);
+            Log.d(Globals.STOCK_LOG, "Something went wrong with single stock parser:\n" + e);
         }
 
         return stockQuote;
     }
 
     // method for parsing json list of stock objects
-    public static List<StockQuote> parseStockListJson(List<String> symbolList, String jsonInput) {
+    public static List<StockQuote> parseStockListJson(String jsonInput, List<String> symbolList) {
         // Receiving a string with json objects,
         // we extract the info and map it to a stockQuote object.
-
         List<StockQuote> listOfStocks = new ArrayList<StockQuote>(); // we make a new List of stock objects
         try {
             //then make a json object from the string input, from the volley response
@@ -62,16 +57,13 @@ public class StockJsonParser {
                 stockQuote.setPrimaryExchange(jsonQuote.getString("primaryExchange"));
                 stockQuote.setLatestPrice(jsonQuote.getDouble("latestPrice"));
                 stockQuote.setTimeStamp(jsonQuote.getString("latestTime"));
-                stockQuote.setOpeningPrice(jsonQuote.getDouble("open"));
-                stockQuote.setClosingPrice(jsonQuote.getDouble("close"));
-                stockQuote.setChangePercentage(jsonQuote.getDouble("changePercent"));
                 stockQuote.setSector(jsonQuote.getString("sector"));
                 listOfStocks.add(stockQuote);
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.d(Globals.STOCK_LOG, "Something went terribly wrong, with the list of stock objects:\n" + e);
+            Log.d(Globals.STOCK_LOG, "Something went terribly wrong, with the list of stocks parser:\n" + e);
         }
 
         return listOfStocks;

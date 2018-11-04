@@ -27,6 +27,7 @@ public interface StockQuoteDao {
     @Insert
     void insertSingleStock(StockQuote stock);
 
+    // TODO: NOT USED
     @Insert
     void insertStockList(List<StockQuote> stockList);
 

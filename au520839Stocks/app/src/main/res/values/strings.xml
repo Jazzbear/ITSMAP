@@ -1,15 +1,18 @@
 <resources>
     <string name="app_name">au520839-Stocks</string>
-    <string name="overviewHeader">My Stock:</string>
+    <string name="overviewHeader">My Stocks:</string>
     <string name="stockName">Shire Inc.</string>
     <string name="stockPurchaseField">Purchased at 8999.9</string>
     <string name="stockPrice">100</string>
     <string name="numberOfStocks">10</string>
+    <!--Buttons text-->
     <string name="detailsButtonText">Details</string>
     <string name="editButtonText">Edit</string>
     <string name="backButtonText">Back</string>
     <string name="saveButtonText">Save</string>
     <string name="cancelButtonText">Cancel</string>
+    <string name="deleteButtonText">Delete</string>
+
     <string name="sectorTech">Technology</string>
     <string name="sectorMats">Materials</string>
     <string name="sectorHealth">Healthcare</string>
@@ -30,6 +33,14 @@
     <string name="toastFailedSaving">Could not save!</string>
     <string name="stockPurchaseText">Purchased at:</string>
     <string name="toastNoChanges">No changes made</string>
+
+    <!--New strings-->
+    <string name="addStockBtnString">Add stock</string>
+    <string name="refreshBtnString">Refresh</string>
+    <string name="dialogSymbolHelperText">Write stock symbol</string>
+    <string name="dialogTitle">Add a new stock</string>
+    <string name="positiveDialogBtnText">Add</string>
+    <string name="negativeDialogBtnText">Cancel</string>
 
     <!--Service related-->
     <string name="notifyChannelName" translatable="false">Stock service channel</string>
