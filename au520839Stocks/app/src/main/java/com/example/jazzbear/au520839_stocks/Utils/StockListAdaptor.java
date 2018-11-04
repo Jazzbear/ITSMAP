@@ -68,6 +68,8 @@ public class StockListAdaptor extends BaseAdapter {
             symbolText.setText(itemListStock.getStockSymbol());
             TextView companyNameText = convertView.findViewById(R.id.itemCompanyName);
             companyNameText.setText(itemListStock.getCompanyName());
+            TextView timestampText = convertView.findViewById(R.id.itemTimestamp);
+            timestampText.setText(itemListStock.getTimeStamp());
             TextView priceText = convertView.findViewById(R.id.itemCurrentPrice);
             priceText.setText(Double.toString(itemListStock.getLatestStockValue()));
             TextView priceDifference = convertView.findViewById(R.id.itemPriceDifference);

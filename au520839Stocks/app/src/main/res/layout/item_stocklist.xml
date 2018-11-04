@@ -23,12 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:text="TextView"
         app:layout_constraintBaseline_toBaselineOf="@+id/itemSymbol"
-        app:layout_constraintEnd_toStartOf="@+id/itemCurrentPrice"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/itemSymbol" />
 
     <TextView
@@ -38,7 +34,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="TextView"
-        app:layout_constraintBaseline_toBaselineOf="@+id/itemCompanyName"
+        app:layout_constraintBaseline_toBaselineOf="@+id/itemTimestamp"
         app:layout_constraintEnd_toStartOf="@+id/itemPriceDifference" />
 
     <TextView
@@ -50,4 +46,18 @@
         android:text="TextView"
         app:layout_constraintBaseline_toBaselineOf="@+id/itemCurrentPrice"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/itemTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="TextView"
+        app:layout_constraintBaseline_toBaselineOf="@+id/itemCompanyName"
+        app:layout_constraintEnd_toStartOf="@+id/itemCurrentPrice"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/itemCompanyName" />
 </android.support.constraint.ConstraintLayout>
