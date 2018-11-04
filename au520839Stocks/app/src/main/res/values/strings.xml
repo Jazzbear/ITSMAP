@@ -16,10 +16,18 @@
     <string name="sectorTech">Technology</string>
     <string name="sectorMats">Materials</string>
     <string name="sectorHealth">Healthcare</string>
-    <string name="nameCat">Name:</string>
+
+    <string name="symbolCat">Symbol:</string>
+    <string name="nameCat">Company Name:</string>
     <string name="priceCat">Price:</string>
     <string name="stockCat">#Stocks:</string>
     <string name="sectorCat">Sector:</string>
+    <string name="primaryExchangeCat">Primary Exchange:</string>
+    <string name="latestValueCat">Current Value:</string>
+    <string name="latestTimeStampCat">Last updated:</string>
+    <string name="purchaseValueCat">Purchased for:</string>
+
+
     <string name="nameHint">Input stock name</string>
     <string name="priceHint">Input stock price</string>
     <string name="stocksHint">Input amount of stocks</string>
@@ -41,6 +49,9 @@
     <string name="dialogTitle">Add a new stock</string>
     <string name="positiveDialogBtnText">Add</string>
     <string name="negativeDialogBtnText">Cancel</string>
+    <string name="badStockRequestToastText">
+        The stock of that symbol was not found.
+        Make sure you input an existing stock symbol in UPPERCASE letters</string>
 
     <!--Service related-->
     <string name="notifyChannelName" translatable="false">Stock service channel</string>

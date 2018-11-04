@@ -7,7 +7,7 @@ import android.content.Context;
 
 import com.example.jazzbear.au520839_stocks.Models.StockQuote;
 
-@Database(entities = {StockQuote.class}, version = 2)
+@Database(entities = {StockQuote.class}, version = 3)
 public abstract class StockDatabase extends RoomDatabase {
     public abstract StockQuoteDao stockQuoteDao();
     private static volatile StockDatabase INSTANCE;
@@ -16,7 +16,7 @@ public abstract class StockDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             synchronized (StockDatabase.class) {
                 INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                        StockDatabase.class, "stock_database").allowMainThreadQueries().fallbackToDestructiveMigration().build();
+                        StockDatabase.class, "stock_database").fallbackToDestructiveMigration().build();
             }
         }
         return INSTANCE;

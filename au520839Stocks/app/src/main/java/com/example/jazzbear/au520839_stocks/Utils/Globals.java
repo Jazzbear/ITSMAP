@@ -6,7 +6,8 @@ import java.util.List;
 public class Globals {
     public static final int DETAILS_REQUEST = 101;
     public static final int EDIT_REQUEST = 201;
-    public static final int DELETE_RESULT = 999;
+    //Custom result code used in onActivityResult, between details and overview
+    public static final int RESULT_DELETE = 999;
     public static final String STOCKOBJECT_EXTRA = "com.jazzbear.stockobject";
     public static final String STOCK_STATE = "state_of_stock";
     public static final String STOCK_LOG = "STOCK_DEBUG_LOGGING";
@@ -22,6 +23,7 @@ public class Globals {
 
     public static String STOCK_SYMBOL = "";
 
+    //public list, this way it can easily be kept up to date and used anywhere
     public static final List<String> stockSymbolList = new ArrayList<String>() {
         {
             add("TSLA");

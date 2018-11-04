@@ -27,12 +27,12 @@ import static com.example.jazzbear.au520839_stocks.Utils.Globals.STOCK_LOG;
 public class DetailsActivity extends AppCompatActivity {
 
     private static final String DETAILS_LOG = "Details_Activity_Log";
-    private TextView detailName, detailPrice, detailAmount, detailSector;
-    private ServiceConnection serviceConnection;
-    private StockService stockService;
-    //    private StockQuote stockQuote;
     private boolean serviceBound = false;
     Button backButton, editButton, deleteButton;
+    private TextView detailSymbol, detailName, detailPrice, detailAmount;
+    private TextView detailSector, detailPrimExchange, detailCurrentVal, detailTimestamp;
+    private ServiceConnection serviceConnection;
+    private StockService stockService;
     private StockQuote detailsStock;
 
     @Override
@@ -42,21 +42,23 @@ public class DetailsActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             detailsStock = savedInstanceState.getParcelable(Globals.STOCK_STATE);
-//            toast("Refreshed UI"); // For testing
         } else {
             detailsStock = getIntent().getParcelableExtra(Globals.STOCKOBJECT_EXTRA);
         }
 
+
+        detailSymbol = findViewById(R.id.symbolDetails);
         detailName = findViewById(R.id.nameDetails);
         detailPrice = findViewById(R.id.priceDetails);
         detailAmount = findViewById(R.id.stocksDetails);
         detailSector = findViewById(R.id.sectorDetails);
+        detailPrimExchange = findViewById(R.id.primExchangeDetails);
+        detailCurrentVal = findViewById(R.id.currentValDetails);
+        detailTimestamp = findViewById(R.id.timestampDetails);
 
-        // Update the ui with the new information
         updateDetailsUI();
         //Setup connection to service
         setupServiceConnection();
-
 
         backButton = findViewById(R.id.backBtn);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +90,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onStart();
         // Register to receiver here so we use it when the detailsActivity is in view.
         registerBroadcastReceiver();
+        // bind to service once visible.
         bindToStockService();
     }
 
@@ -96,9 +99,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onStop();
         // Here we do want to unregister receiver, no need to get broad casts for this activity
         // when its no longer visible.
-        Log.d(STOCK_LOG, "unregistering receivers");
-        LocalBroadcastManager.getInstance(this)
-                .unregisterReceiver(detailsBroadcastReceiver);
+        unregisterBroadcastReceiver();
         // unbind from service when app is stopped, and no longer visible.
         unBindFromStockService();
     }
@@ -111,7 +112,15 @@ public class DetailsActivity extends AppCompatActivity {
                 .registerReceiver(detailsBroadcastReceiver, iFilter);
     }
 
+    private void unregisterBroadcastReceiver() {
+        Log.d(STOCK_LOG, "unregistering receivers");
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(detailsBroadcastReceiver);
+    }
+
     // Setting up connection to StockService so we can get the binder, so we can bind later and use it.
+    // Inspired stunt code and slides from lecture 6, and also guide on:
+    // http://developer.android.com/reference/android/app/Service.html
     private void setupServiceConnection() {
         // connect to service
         serviceConnection = new ServiceConnection() {
@@ -127,38 +136,18 @@ public class DetailsActivity extends AppCompatActivity {
                 Log.d(Globals.STOCK_LOG, "Stock service disconnected");
             }
         };
-        // Start the service so it runs in the background regardless
-        //TODO: if this dont work make an intent first instead of this anonymous intent method
-        startService(new Intent(this, StockService.class));
     }
 
     private void updateDetailsUI() {
+        detailSymbol.setText(detailsStock.getStockSymbol());
         detailName.setText(detailsStock.getCompanyName());
-        detailPrice.setText(Double.toString(detailsStock.getStockValue()));
+        detailPrice.setText(Double.toString(detailsStock.getStockPurchasePrice()));
         detailAmount.setText(Integer.toString(detailsStock.getAmountOfStocks()));
         detailSector.setText(detailsStock.getSector());
+        detailPrimExchange.setText(detailsStock.getPrimaryExchange());
+        detailCurrentVal.setText(Double.toString(detailsStock.getLatestStockValue()));
+        detailTimestamp.setText(detailsStock.getTimeStamp());
     }
-
-    private BroadcastReceiver detailsBroadcastReceiver = new BroadcastReceiver() {
-        @Override //TODO: Might not need to be final nullable
-        public void onReceive(Context context, final @Nullable Intent intent) {
-            Log.d(DETAILS_LOG, "Broadcast received in details activity");
-            String intenCode = intent.getStringExtra(StockService.BROADCAST_ACTION_RESULT_CODE);
-            if (intenCode.equalsIgnoreCase(getResources().getString(R.string.broadcastActionMultiStock))) {
-                List<StockQuote> stockListFromService = stockService.getServiceStockList();
-                // iterate through the list until we find the stock
-                for (StockQuote updateStock : stockListFromService) {
-                    // Match the Unique id's, if match, set the details stuck with the updated stock
-                    if (updateStock.getUid().equals(detailsStock.getUid())) {
-                        detailsStock = updateStock;
-                        break; // break out of the loop, no need to check the rest of the list.
-                    }
-                }
-                updateDetailsUI(); // Update ui so the stock info is up to date.
-            }
-            //TODO: Possibly some more error handling here if needed?
-        }
-    };
 
     //Send an intent result back to the the overview with no changes and destroy details view.
     private void backButtonPressed() {
@@ -176,7 +165,7 @@ public class DetailsActivity extends AppCompatActivity {
     private void deleteButtonPressed() {
         //Maybe a dialog here would be good, to confirm or cancel
         Intent deleteData = new Intent();
-        setResult(Globals.DELETE_RESULT, deleteData);
+        setResult(Globals.RESULT_DELETE, deleteData);
         finish();
     }
 
@@ -196,6 +185,27 @@ public class DetailsActivity extends AppCompatActivity {
             serviceBound = false;
         }
     }
+
+    private BroadcastReceiver detailsBroadcastReceiver = new BroadcastReceiver() {
+        @Override //TODO: Might not need to be final nullable
+        public void onReceive(Context context, final @Nullable Intent intent) {
+            Log.d(DETAILS_LOG, "details activity broadcast received");
+
+            String intenCode = intent.getStringExtra(StockService.BROADCAST_ACTION_RESULT_CODE);
+            if (intenCode.equalsIgnoreCase(getResources().getString(R.string.broadcastActionMultiStock))) {
+                List<StockQuote> stockListFromService = stockService.getServiceStockList();
+                // iterate through the list until we find the stock
+                for (StockQuote updateStock : stockListFromService) {
+                    // Match the Unique id's, if match, set the details stuck with the updated stock
+                    if (updateStock.getUid() == detailsStock.getUid()) {
+                        detailsStock = updateStock;
+                        break; // break out of the loop, no need to check the rest of the list.
+                    }
+                }
+                updateDetailsUI(); // Update ui so the stock info is up to date.
+            }
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

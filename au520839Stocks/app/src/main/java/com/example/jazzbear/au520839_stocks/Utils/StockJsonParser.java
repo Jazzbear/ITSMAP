@@ -26,7 +26,7 @@ public class StockJsonParser {
             stockQuote.setCompanyName(jsonQuote.getString("companyName"));
             stockQuote.setStockSymbol(jsonQuote.getString("symbol"));
             stockQuote.setPrimaryExchange(jsonQuote.getString("primaryExchange"));
-            stockQuote.setLatestPrice(jsonQuote.getDouble("latestPrice"));
+            stockQuote.setLatestStockValue(jsonQuote.getDouble("latestPrice"));
             stockQuote.setTimeStamp(jsonQuote.getString("latestTime"));
             stockQuote.setSector(jsonQuote.getString("sector"));
         } catch (JSONException e) {
@@ -55,7 +55,7 @@ public class StockJsonParser {
                 stockQuote.setCompanyName(jsonQuote.getString("companyName"));
                 stockQuote.setStockSymbol(jsonQuote.getString("symbol"));
                 stockQuote.setPrimaryExchange(jsonQuote.getString("primaryExchange"));
-                stockQuote.setLatestPrice(jsonQuote.getDouble("latestPrice"));
+                stockQuote.setLatestStockValue(jsonQuote.getDouble("latestPrice"));
                 stockQuote.setTimeStamp(jsonQuote.getString("latestTime"));
                 stockQuote.setSector(jsonQuote.getString("sector"));
                 listOfStocks.add(stockQuote);

@@ -60,6 +60,7 @@ public class StockListAdaptor extends BaseAdapter {
             inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.item_stocklist, null);
         }
+
         // again first check the stockList isn't empty and that we aren't at the end of the list.
         if (listOfStocks != null && listOfStocks.size() > position) {
             itemListStock = listOfStocks.get(position);
@@ -68,7 +69,7 @@ public class StockListAdaptor extends BaseAdapter {
             TextView companyNameText = convertView.findViewById(R.id.itemCompanyName);
             companyNameText.setText(itemListStock.getCompanyName());
             TextView priceText = convertView.findViewById(R.id.itemCurrentPrice);
-            priceText.setText(Double.toString(itemListStock.getLatestPrice()));
+            priceText.setText(Double.toString(itemListStock.getLatestStockValue()));
             TextView priceDifference = convertView.findViewById(R.id.itemPriceDifference);
             priceDifference.setText(String.format("%.2f", itemListStock.getPriceDifference()));
             return convertView;
