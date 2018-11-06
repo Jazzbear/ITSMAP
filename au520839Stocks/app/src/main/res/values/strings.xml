@@ -27,6 +27,7 @@
     <string name="priceDifferenceCat">Price difference:</string>
     <string name="latestTimeStampCat">Last updated:</string>
     <string name="purchaseValueCat">Purchased for:</string>
+    <string name="totalEarningsCat">Total Earnings:</string>
 
 
     <string name="nameHint">Input stock name</string>

@@ -8,7 +8,7 @@ import android.os.Parcelable;
 
 import java.util.UUID;
 
-@Entity(indices = {@Index(value = "stockSymbol", unique = true)})
+@Entity
 public class StockQuote implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
@@ -23,6 +23,7 @@ public class StockQuote implements Parcelable {
     private String timeStamp;
     private double priceDifference;
     private String sector;
+    private double totalEarnings;
 
     public StockQuote() {}
 
@@ -94,6 +95,7 @@ public class StockQuote implements Parcelable {
         return latestStockValue - stockPurchasePrice;
     }
 
+    //TODO: Probable not needed
     public void setPriceDifference(double priceDifference) {
         this.priceDifference = priceDifference;
     }
@@ -104,6 +106,15 @@ public class StockQuote implements Parcelable {
 
     public void setSector(String sector) {
         this.sector = sector;
+    }
+
+    public double getTotalEarnings() {
+        return latestStockValue * amountOfStocks;
+    }
+
+    //TODO: Probable not needed
+    public void setTotalEarnings(double totalEarnings) {
+        this.totalEarnings = totalEarnings;
     }
 
     protected StockQuote(Parcel in) {
@@ -117,6 +128,7 @@ public class StockQuote implements Parcelable {
         timeStamp = in.readString();
         priceDifference = in.readDouble();
         sector = in.readString();
+        totalEarnings = in.readDouble();
     }
 
     @Override
@@ -136,6 +148,7 @@ public class StockQuote implements Parcelable {
         dest.writeString(timeStamp);
         dest.writeDouble(priceDifference);
         dest.writeString(sector);
+        dest.writeDouble(totalEarnings);
     }
 
     @SuppressWarnings("unused")
@@ -150,4 +163,5 @@ public class StockQuote implements Parcelable {
             return new StockQuote[size];
         }
     };
+
 }

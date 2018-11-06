@@ -73,7 +73,16 @@ public class StockListAdaptor extends BaseAdapter {
             TextView priceText = convertView.findViewById(R.id.itemCurrentPrice);
             priceText.setText(Double.toString(itemListStock.getLatestStockValue()));
             TextView priceDifference = convertView.findViewById(R.id.itemPriceDifference);
-            priceDifference.setText(String.format("%.2f", itemListStock.getPriceDifference()));
+            //Setting the max decimals for the double. Im only interested in the last 3 digits here.
+            priceDifference.setText(String.format("%.3f", itemListStock.getPriceDifference()));
+            TextView timeStamp = convertView.findViewById(R.id.itemTimestamp);
+            timeStamp.setText(itemListStock.getTimeStamp());
+            TextView stockAmount = convertView.findViewById(R.id.itemStockAmount);
+            stockAmount.setText("#Stocks: " + Integer.toString(itemListStock.getAmountOfStocks()));
+            TextView totalEarnins = convertView.findViewById(R.id.itemTotalEarnings);
+            //Only want the last 2 digits here.
+            totalEarnins.setText("Total: " + String.format("%.2f", itemListStock.getTotalEarnings()));
+//            totalEarnins.setText(Double.toString(itemListStock.getTotalEarnings()));
             return convertView;
         }
         // Until the list is populated we return null, and keep the listView empty

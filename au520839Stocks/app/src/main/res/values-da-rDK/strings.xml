@@ -28,6 +28,8 @@
     <string name="priceDifferenceCat">Pris forskel:</string>
     <string name="latestTimeStampCat">Sidst opdateret:</string>
     <string name="purchaseValueCat">Købt for:</string>
+    <string name="totalEarningsCat">Total Indtjening:</string>
+
 
 
     <string name="nameHint">Indtast aktie navn</string>

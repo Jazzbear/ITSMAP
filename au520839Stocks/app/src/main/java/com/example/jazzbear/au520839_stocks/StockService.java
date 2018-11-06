@@ -47,9 +47,6 @@ public class StockService extends Service {
     // For broadcasting list of stocks
     public static final String LIST_OF_STOCKS_BROADCAST_ACTION = "com.jazzbear.android.LIST_OF_STOCKS_BROADCAST_ACTION";
 
-    //TODO: REMOVE THIS IF NOT USED
-    // This is so we can set it to either to either single_stock_action or multi_stock_action
-//    public static final String BROADCAST_ACTION_RESULT_CODE = "extra_for_action_decision";
 
     private boolean started = false;
     private boolean running = false;
@@ -105,6 +102,11 @@ public class StockService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // TODO: I might want to implement so that we can press the notification,
+        // TODO: and go into the activity. Then if its swiped it should close the notification
+        // TODO: and kill the service perhaps.
+
+
         //TODO: IMPORTANT!!!!!!!!!!! THIS MIGHT NEED TO BE REMOVED LATER.
         //TODO: Depends if the service keeps running once the app closes etc. Because it should.
         // Cleanup so the thread does not continue to run in the background
@@ -121,19 +123,15 @@ public class StockService extends Service {
             if (rQueue == null) {
                 rQueue = Volley.newRequestQueue(this);
             }
-            //First check if inital setup has been made. I.e a database exist and is populated.
+            //First check if initial setup has been made. I.e a database exist and is populated.
             if (!checkInitDataBase()) {
                 firstTimeDataSetup(); // if not, run the setup methods.
             }
             started = true; //flip it so it stays started, until service is destroyed.
-            // once something starts the service we want to start the runnable as well
-            running = true;
+            running = true; // once something starts the service we want to start the runnable as well.
+            setupNotifications();// Then afterwards setup notification channel etc.
 
-            // Then afterwards setup notification channel etc.
-            setupNotifications();
-
-            // Setup the runnable
-            Runnable runnable = new Runnable() {
+            Runnable runnable = new Runnable() { // Setup the runnable
                 @Override
                 public void run() {
                     //We want to make sure we only request stocks that exists in the database,
@@ -313,7 +311,7 @@ public class StockService extends Service {
     }
 
     // for requesting a single stock.
-    public void requestSingleStock(final String requestSymbol) {
+    public void requestSingleStock(final String requestSymbol, final int amountOfStocks) {
         //First add the new symbol to the stock symbol list
 //        Globals.stockSymbolList.add(requestSymbol); //TODO: Should be added to the stock symbol list only after the success
 
@@ -334,7 +332,7 @@ public class StockService extends Service {
                             //Since the request was a success add it to the global symbol list
                             //So it automatically gets updated on next auto request
                             localStockSymbolList.add(requestSymbol);
-                            asyncHandleSingleStockResponse(response, requestSymbol);
+                            asyncHandleSingleStockResponse(response, requestSymbol, amountOfStocks);
                         } else {
                             //If we get an empty body, cause the symbol wasn't found.
                             //Make a toast to the user explaining what happened.
@@ -353,7 +351,7 @@ public class StockService extends Service {
     }
 
     //Save and broadcast a single stock, params has to be final so they can be accessed of the inner async body.
-    private void asyncHandleSingleStockResponse(final String result, final String requestSymbol) {
+    private void asyncHandleSingleStockResponse(final String result, final String requestSymbol, final int amountOfStocks) {
 
         @SuppressLint("StaticFieldLeak")
         AsyncTask<Void, Void, Void> asyncInsertSingleStock = new AsyncTask<Void, Void, Void>() {
@@ -363,6 +361,8 @@ public class StockService extends Service {
                 StockQuote newStockQuote = StockJsonParser.parseSingleStockJson(result, requestSymbol);
                 //Set the purchase value to the latest price, the first time its created.
                 newStockQuote.setStockPurchasePrice(newStockQuote.getLatestStockValue());
+                //Also set the initial amount of stocks bought.
+                newStockQuote.setAmountOfStocks(amountOfStocks);
                 //Insert the new stock in the database and then add it to the local list.
                 //get the stock id after the insert
                 newStockQuote.setUid(db.stockQuoteDao().insertSingleStock(newStockQuote));
@@ -376,11 +376,10 @@ public class StockService extends Service {
                 Intent broadcastIntent = new Intent();
                 // Set the broadcast action filter
                 broadcastIntent.setAction(SINGLE_STOCK_BROADCAST_ACTION);
-                // Broadcast action code for single stock
-                //TODO: No longer seems needed
-//                broadcastIntent.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionSingleStock));
-                Log.d(STOCK_LOG, "Broadcasting single stock:\n" + result + "\n and symbol used:\n" + requestSymbol);
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent); // send it off to be caught in the other thread
+                Log.d(STOCK_LOG, "Broadcasting after single stock requested:\n"
+                        + result + "\n and symbol used:\n" + requestSymbol);
+                // send it off to be caught in the other thread
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
             }
         };
         asyncInsertSingleStock.execute();

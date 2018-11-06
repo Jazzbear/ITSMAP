@@ -7,6 +7,30 @@
     tools:context=".DetailsActivity">
 
     <TextView
+        android:id="@+id/txtTotalEarnings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/totalEarningsCat"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/txtTimestamp" />
+
+    <TextView
+        android:id="@+id/totalEarningsDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="TextView"
+        android:textColor="@android:color/black"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtTotalEarnings"
+        app:layout_constraintStart_toStartOf="@+id/guideline4" />
+
+    <TextView
         android:id="@+id/priceDifferenceDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -265,7 +289,7 @@
         app:layout_constraintEnd_toStartOf="@+id/editBtn"
         app:layout_constraintHorizontal_bias="0.555"
         app:layout_constraintStart_toEndOf="@+id/backBtn"
-        app:layout_constraintTop_toBottomOf="@+id/timestampDetails" />
+        app:layout_constraintTop_toBottomOf="@+id/totalEarningsDetails" />
 
     <TextView
         android:id="@+id/symbolDetails"

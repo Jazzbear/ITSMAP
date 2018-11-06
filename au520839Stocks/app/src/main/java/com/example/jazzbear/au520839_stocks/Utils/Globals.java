@@ -23,17 +23,14 @@ public class Globals {
     // Append this string after all the symbols to filter the data collected.
     public static final String STOCK_QUOTE_FILTER_STRING = "&types=quote&filter=companyName,symbol,primaryExchange,latestPrice,latestTime,open,close,changePercent,sector";
 
-    //TODO: removed if not used
-    public static String STOCK_SYMBOL = "";
-
     // For notifications
     public static final String CHANNEL_ID = "stock_channel";
     public static final int NOTIFY_ID = 1337;
 
     //public list, this way it can easily be kept up to date and used anywhere.
     //it could have been local in the service, but i used it originally as a shared denominator,
-    //between my activities and service.
-    public static final List<String> stockSymbolList = new ArrayList<String>() {};
+    //between my activities and service. TODO: Either remove this or try to refactor again and change the code so the global list is set on first initial setups
+//    public static final List<String> stockSymbolList = new ArrayList<String>() {};
     // List used to first setup database.
     public static final List<String> initDataBaseSymbolList = new ArrayList<String>() {
         {

@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -196,12 +197,18 @@ public class OverviewActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         TextView symbolTextField = dialogView.findViewById(R.id.dialogSymbolField);
+                        EditText amountTextField = dialogView.findViewById(R.id.dialogAmountField);
                         // In the service where we make the request we do error handling,
                         // if the symbol exist and the request succeeds, we add the symbol input,
-                        // to the Global list of symbols.
+                        // to the Global list of symbols. The input stock amount field, we just hold in a gl
                         final String symbol = symbolTextField.getText().toString().toUpperCase();
-                        stockService.requestSingleStock(symbol);
+                        //Also we take the amount input and save in a local variable in the service.
+                        //Then once the stock is found and about to be saved to the database,
+                        //We manualy set the price and stock amount for the stock before its saved and broadcasted.
+                        final int amount = Integer.parseInt(amountTextField.getText().toString());
+                        stockService.requestSingleStock(symbol, amount);
                         symbolTextField.setText(""); //clear the text field, so its ready for next time.
+                        amountTextField.setText("");
                     }
                 }).setNegativeButton(R.string.negativeDialogBtnText, new DialogInterface.OnClickListener() {
             @Override
