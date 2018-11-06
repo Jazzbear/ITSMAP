@@ -48,6 +48,7 @@
     <string name="addStockBtnString">Add stock</string>
     <string name="refreshBtnString">Refresh</string>
     <string name="dialogSymbolHelperText">Write stock symbol</string>
+    <string name="dialogStockAmountHelpText">Write an amount</string>
     <string name="dialogTitle">Add a new stock</string>
     <string name="positiveDialogBtnText">Add</string>
     <string name="negativeDialogBtnText">Cancel</string>

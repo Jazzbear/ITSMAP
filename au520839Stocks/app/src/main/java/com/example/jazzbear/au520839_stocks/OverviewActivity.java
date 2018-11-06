@@ -128,7 +128,7 @@ public class OverviewActivity extends AppCompatActivity {
                 if (data != null) {
                     //When we get some data from details activity intent result.
                     // First get the data
-                    StockQuote stockQuote = data.getParcelableExtra(Globals.STOCKOBJECT_EXTRA);
+                    StockQuote stockQuote = data.getParcelableExtra(Globals.STOCK_OBJECT_EXTRA);
                     //We update stocks properties in the stock list,
                     // because they could have changed, while in detailsActivity
                     stockQuote.setLatestStockValue(listOfStockQuotes.get(listPosition - 1).getLatestStockValue());
@@ -247,7 +247,7 @@ public class OverviewActivity extends AppCompatActivity {
     private void getStockDetailsView(StockQuote stockItem) {
         //Sent an intent to details and parse the stockQuote object.
         Intent detailsIntent = new Intent(getApplicationContext(), DetailsActivity.class);
-        detailsIntent.putExtra(Globals.STOCKOBJECT_EXTRA, stockItem);
+        detailsIntent.putExtra(Globals.STOCK_OBJECT_EXTRA, stockItem);
         startActivityForResult(detailsIntent, Globals.DETAILS_REQUEST);
     }
 
@@ -341,7 +341,7 @@ public class OverviewActivity extends AppCompatActivity {
 
         // make an intent to go for details view
         Intent goToDetailsIntent = new Intent(getApplicationContext(), EditActivity.class)
-                .putExtra(Globals.STOCKOBJECT_EXTRA, listOfStockQuotes.get(listPosition -1));
+                .putExtra(Globals.STOCK_OBJECT_EXTRA, listOfStockQuotes.get(listPosition -1));
         startActivityForResult(goToDetailsIntent, Globals.DETAILS_REQUEST);
 
         //And update the list adaptor since we just got the newest list from the database.

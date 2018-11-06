@@ -29,8 +29,11 @@ public class DetailsActivity extends AppCompatActivity {
     private static final String DETAILS_LOG = "Details_Activity_Log";
     private boolean serviceBound = false;
     Button backButton, editButton, deleteButton;
-    private TextView detailSymbol, detailName, detailPrice, detailAmount, detailPriceDifference;
-    private TextView detailSector, detailPrimExchange, detailCurrentVal, detailTimestamp;
+    //All the text views
+    private TextView detailSymbol, detailName, detailPrice, detailAmount,
+            detailPriceDifference, detailSector, detailPrimExchange,
+            detailCurrentVal, detailTimestamp, totalEarnings;
+
     private ServiceConnection serviceConnection;
     private StockService stockService;
     private StockQuote detailsStock;
@@ -43,7 +46,7 @@ public class DetailsActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             detailsStock = savedInstanceState.getParcelable(Globals.STOCK_STATE);
         } else {
-            detailsStock = getIntent().getParcelableExtra(Globals.STOCKOBJECT_EXTRA);
+            detailsStock = getIntent().getParcelableExtra(Globals.STOCK_OBJECT_EXTRA);
         }
 
 
@@ -56,6 +59,7 @@ public class DetailsActivity extends AppCompatActivity {
         detailCurrentVal = findViewById(R.id.currentValDetails);
         detailPriceDifference = findViewById(R.id.priceDifferenceDetails);
         detailTimestamp = findViewById(R.id.timestampDetails);
+        totalEarnings = findViewById(R.id.totalEarningsDetails);
         //Update the ui with new info
         updateDetailsUI();
         // Register to receiver here so we use it when the detailsActivity is started.
@@ -146,6 +150,8 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void updateDetailsUI() {
+        //TODO: Should probably do some formatting here aswell like in the stock adaptor.
+        //TODO: Possibly do the formatting in the StockQuote class. #THEREMUSTBEABETTERWAY
         detailSymbol.setText(detailsStock.getStockSymbol());
         detailName.setText(detailsStock.getCompanyName());
         detailPrice.setText(Double.toString(detailsStock.getStockPurchasePrice()));
@@ -153,8 +159,9 @@ public class DetailsActivity extends AppCompatActivity {
         detailSector.setText(detailsStock.getSector());
         detailPrimExchange.setText(detailsStock.getPrimaryExchange());
         detailCurrentVal.setText(Double.toString(detailsStock.getLatestStockValue()));
-        detailPriceDifference.setText(Double.toString(detailsStock.getPriceDifference()));
+        detailPriceDifference.setText(String.format("%.3f", detailsStock.getPriceDifference()));
         detailTimestamp.setText(detailsStock.getTimeStamp());
+        totalEarnings.setText(Double.toString(detailsStock.getTotalEarnings()));
     }
 
     //Send an intent result back to the the overview with no changes and destroy details view.
@@ -165,7 +172,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void editButtonPressed() {
         Intent editIntent = new Intent(DetailsActivity.this, EditActivity.class);
-        editIntent.putExtra(Globals.STOCKOBJECT_EXTRA, detailsStock);
+        editIntent.putExtra(Globals.STOCK_OBJECT_EXTRA, detailsStock);
         startActivityForResult(editIntent, Globals.EDIT_REQUEST);
     }
 

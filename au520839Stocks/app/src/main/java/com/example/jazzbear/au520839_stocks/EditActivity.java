@@ -28,7 +28,7 @@ public class EditActivity extends AppCompatActivity {
             editStock = savedInstanceState.getParcelable(Globals.STOCK_STATE);
         } else {
             //Take out from the intent, the stock object via. the parcelable object class.
-            editStock = getIntent().getParcelableExtra(Globals.STOCKOBJECT_EXTRA);
+            editStock = getIntent().getParcelableExtra(Globals.STOCK_OBJECT_EXTRA);
         }
 
         //Init view elements
@@ -75,7 +75,7 @@ public class EditActivity extends AppCompatActivity {
     private void saveChanges() {
         if (checkFieldsAreValid()) {
             getChanges();
-            Intent editResult = new Intent().putExtra(Globals.STOCKOBJECT_EXTRA, editStock);
+            Intent editResult = new Intent().putExtra(Globals.STOCK_OBJECT_EXTRA, editStock);
             setResult(RESULT_OK, editResult);
             finish();
         } else {
