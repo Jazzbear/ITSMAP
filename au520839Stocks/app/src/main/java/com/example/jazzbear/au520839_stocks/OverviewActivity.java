@@ -36,6 +36,7 @@ import static com.example.jazzbear.au520839_stocks.Utils.Globals.STOCK_LOG;
 public class OverviewActivity extends AppCompatActivity {
     // View elements
     Button addButton, refreshButton;
+
     private ListView stockListView;// Stock list we use to populate adaptor
     private StockListAdaptor stockListAdaptor;
     private List<StockQuote> listOfStockQuotes;
@@ -46,10 +47,19 @@ public class OverviewActivity extends AppCompatActivity {
     StockService stockService;
     boolean serviceBound = false;
 
-    // ############ LIFE CYCLE METHODS ###############
+    // ################### LIFE CYCLE METHODS ###################
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupServiceConnection();
+        // Recreating after a onDestroy and instance state saved.
+        if (savedInstanceState != null) {
+            // On rotation or other means that destroy and recreate the app,
+            // We restore the list position of the app.
+            listPosition = savedInstanceState.getInt(Globals.LIST_STATE);
+
+        }
+        // Init the layout view for activity
         setContentView(R.layout.activity_overview);
         // For database debugging
         enableStethos();
@@ -58,22 +68,15 @@ public class OverviewActivity extends AppCompatActivity {
         stockListView = findViewById(R.id.listViewStocks);
         listOfStockQuotes = new ArrayList<StockQuote>(){};
         //Register broadcast receiver and filters
-        registerBroadcastReciever();
+        registerBroadcastReceiver();
         // Setup connection, so we can bind to stockService later, and we also start the service here.
-        setupServiceConnection();
+//        setupServiceConnection();
         // Setup dialog window so we can use it when adding new stock symbol
         setupAddStockDialog();
         // Setup the adaptor
         setupListViewAdaptor();
 
-        // Recreating after and instance saved state.
-        // Otherwise initializes first stock with default values
-        //TODO: need to re-implement savedState for listview
-//        if (savedInstanceState != null) {
-//
-//        } else {
-//
-//        }
+
 
         addButton = findViewById(R.id.addStockBtn);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -104,12 +107,67 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        //TODO: Probably don't want to unregister from broadcasts here.
         unBindFromStockService();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //TODO: Maybe i dont want to unregister?
+        unregisterBroadcastReceiver();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Globals.DETAILS_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                //Update the stock object and update the ui
+//                assert data != null;
+                if (data != null) {
+                    //When we get some data from details activity intent result.
+                    // First get the data
+                    StockQuote stockQuote = data.getParcelableExtra(Globals.STOCKOBJECT_EXTRA);
+                    //We update stocks properties in the stock list,
+                    // because they could have changed, while in detailsActivity
+                    stockQuote.setLatestStockValue(listOfStockQuotes.get(listPosition - 1).getLatestStockValue());
+                    stockQuote.setTimeStamp(listOfStockQuotes.get(listPosition - 1).getTimeStamp());
+                    stockService.asyncUpdateSingleStock(stockQuote);
+                    listOfStockQuotes.set(listPosition - 1, stockQuote);
+                    updateAdaptor();
+//                    stockListAdaptor.setListOfStocks(listOfStockQuotes);
+//                    stockListAdaptor.notifyDataSetChanged();
+                }
+            }
+            else if (resultCode == Globals.RESULT_DELETE) {
+                //Get the stock we want to delete
+                StockQuote stockToDelete = listOfStockQuotes.get(listPosition - 1);
+                //delete it and remove it from the list.
+                stockService.asyncDeleteSingleStock(stockToDelete);
+                // We remove it from the local list, and the async method before,
+                // will do the same for the service's stockList
+                listOfStockQuotes.remove(listPosition - 1);
+                //update the list view adaptor with the changes
+                updateAdaptor();
+//                stockListAdaptor.setListOfStocks(listOfStockQuotes);
+//                stockListAdaptor.notifyDataSetChanged();
+            }
+        }
+    }
+
+    //TODO: Need to change this to handle the stocklist
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //We save the list position of the view so when the activity gets destroyed,
+        // and then recreated in land view mode, it can find its position in the list view again.
+        outState.putInt(Globals.LIST_STATE, listPosition);
+        super.onSaveInstanceState(outState);
+    }
+
+    // ################### BINDING AND SERVICE METHODS ###################
+
     //For registering broadcast receiver
-    private void registerBroadcastReciever() {
+    private void registerBroadcastReceiver() {
         Log.d(STOCK_LOG, "registering receiver");
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(StockService.SINGLE_STOCK_BROADCAST_ACTION);
@@ -118,51 +176,19 @@ public class OverviewActivity extends AppCompatActivity {
                 .registerReceiver(overviewBroadcastReceiver, iFilter);
     }
 
-    // this is inspired by Kasper Løvborg Jensens's earlier stuncode examples, from Lecture 4 and 5.
-    private void setupListViewAdaptor() {
-        stockListAdaptor = new StockListAdaptor(this, listOfStockQuotes);
-        stockListView.setAdapter(stockListAdaptor);
-        stockListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            //Set a clickListener for each item in the adaptor view making the stocks clickable.
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // we set the current list position so we stay in that position,
-                // when the user comes back from details or edit activity.
-                StockQuote listViewStockItem = listOfStockQuotes.get(position);
-                //TODO save the position so we know what to update/remove on return. Remember to save it in savedInstanceState
-
-                listPosition = position + 1;
-                //Provided we get an item.
-                if (listViewStockItem != null) {
-                    getStockDetailsView(listViewStockItem);
-                }
-            }
-        });
-    }
-
-    private void getStockDetailsView(StockQuote stockItem) {
-        //Sent an intent to details and parse the stockQuote object.
-        // TODO: Should maybe be application context or overview context
-        Intent detailsIntent = new Intent(getApplicationContext(), DetailsActivity.class);
-        detailsIntent.putExtra(Globals.STOCKOBJECT_EXTRA, stockItem);
-        startActivityForResult(detailsIntent, Globals.DETAILS_REQUEST);
-    }
-
-
-    //TODO: Need to change this to handle the stocklist
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-//        outState.putParcelable(Globals.STOCK_STATE, stock);
+    //Put it in a method in case i want to move it to a different lifecycle event.
+    private void unregisterBroadcastReceiver() {
+        Log.d(STOCK_LOG, "unregistering receivers");
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(overviewBroadcastReceiver);
     }
 
     // Note: Inspired by the developer guide from:
     // https://developer.android.com/guide/topics/ui/dialogs
     private void setupAddStockDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         LayoutInflater inflater = this.getLayoutInflater(); // Get inflater for current activity context
-        //
+
         final View dialogView = inflater.inflate(R.layout.dialog_add_stock, null);
         builder.setView(dialogView)
                 .setTitle(R.string.dialogTitle)
@@ -173,10 +199,7 @@ public class OverviewActivity extends AppCompatActivity {
                         // In the service where we make the request we do error handling,
                         // if the symbol exist and the request succeeds, we add the symbol input,
                         // to the Global list of symbols.
-                        final String symbol = symbolTextField.getText().toString();
-                        //TODO: Should probably change so we can decide how many stocks you want to buy as well.
-                        //TODO: And maybe also purchase price? We could add 2 more fields 2 the dialog.
-                        //TODO: and then just handle it accordingly in the service, and methods that saves to the database.
+                        final String symbol = symbolTextField.getText().toString().toUpperCase();
                         stockService.requestSingleStock(symbol);
                         symbolTextField.setText(""); //clear the text field, so its ready for next time.
                     }
@@ -190,7 +213,36 @@ public class OverviewActivity extends AppCompatActivity {
         dialog = builder.create();
     }
 
-    // ########## OTHER METHODS ###############
+    // this is inspired by Kasper Løvborg Jensens's earlier stuncode examples, from Lecture 4 and 5.
+    private void setupListViewAdaptor() {
+        stockListAdaptor = new StockListAdaptor(this, listOfStockQuotes);
+        stockListView.setAdapter(stockListAdaptor);
+        stockListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            //Set a clickListener for each item in the adaptor view making the stocks clickable.
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // we set the current list position so we stay in that position,
+                // when the user comes back from details or edit activity.
+                StockQuote listViewStockItem = listOfStockQuotes.get(position);
+                //TODO save the position so we know what to update/remove on return.
+                // TODO: Remember to save it in savedInstanceState
+
+                listPosition = position + 1;
+                //Provided a new stock item is added to the list view.
+                if (listViewStockItem != null) {
+                    //Then get the details view.
+                    getStockDetailsView(listViewStockItem);
+                }
+            }
+        });
+    }
+
+    private void getStockDetailsView(StockQuote stockItem) {
+        //Sent an intent to details and parse the stockQuote object.
+        Intent detailsIntent = new Intent(getApplicationContext(), DetailsActivity.class);
+        detailsIntent.putExtra(Globals.STOCKOBJECT_EXTRA, stockItem);
+        startActivityForResult(detailsIntent, Globals.DETAILS_REQUEST);
+    }
 
     // Setting up connection to StockService so we can get the binder, so we can bind later and use it.
     private void setupServiceConnection() {
@@ -207,6 +259,12 @@ public class OverviewActivity extends AppCompatActivity {
                 // and also ref: https://developer.android.com/guide/components/bound-services
                 stockService = ((StockService.StockServiceBinder) service).getService();
                 Log.d(Globals.STOCK_LOG, "Stock service connected");
+
+                //TODO: For listview after onSaveInstanceState
+                listOfStockQuotes = stockService.getServiceStockList();
+                updateAdaptor();
+//                stockListAdaptor.setListOfStocks(listOfStockQuotes);
+//                stockListAdaptor.notifyDataSetChanged();
             }
 
             @Override
@@ -225,92 +283,6 @@ public class OverviewActivity extends AppCompatActivity {
         startService(new Intent(this, StockService.class));
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Globals.DETAILS_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                //Update the stock object and update the ui
-//                assert data != null;
-                if (data != null) {
-                    //When we get some data from details activity intent result.
-                    // First get the data
-                    StockQuote stockQuote = data.getParcelableExtra(Globals.STOCKOBJECT_EXTRA);
-                    //We update stocks properties in the stock list,
-                    // because they could have changed, while in detailsActivity
-                    stockQuote.setLatestStockValue(listOfStockQuotes.get(listPosition - 1).getLatestStockValue());
-                    stockQuote.setStockPurchasePrice(listOfStockQuotes.get(listPosition - 1).getStockPurchasePrice());
-                    stockQuote.setTimeStamp(listOfStockQuotes.get(listPosition - 1).getTimeStamp());
-                    //TODO: Actualy i should update price difference here as well, and i need to add the field in details activity
-                    //Now update the list and the list view adaptor
-                    stockService.asyncUpdateSingleStock(stockQuote);
-                    listOfStockQuotes.set(listPosition - 1, stockQuote);
-                    stockListAdaptor.setListOfStocks(listOfStockQuotes);
-                    stockListAdaptor.notifyDataSetChanged();
-                }
-            }
-            else if (resultCode == Globals.RESULT_DELETE) {
-                //Get the stock we want to delete
-                StockQuote stockToDelete = listOfStockQuotes.get(listPosition - 1);
-                //delete it and remove it from the list.
-                stockService.asyncDeleteSingleStock(stockToDelete);
-                // We remove it from the local list, and the async method before,
-                // will do the same for the service's stockList
-                listOfStockQuotes.remove(listPosition - 1);
-                //update the list view adaptor with the changes
-                stockListAdaptor.setListOfStocks(listOfStockQuotes);
-                stockListAdaptor.notifyDataSetChanged();
-            }
-        }
-    }
-
-
-    //define our broadcast receiver for (local) broadcasts.
-    // Registered and unregistered in onStart() and onStop() methods
-    private BroadcastReceiver overviewBroadcastReceiver = new BroadcastReceiver() {
-        //TODO: Should maybe have a final @Nullable here, if i want to check on intent actions instead.
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(STOCK_LOG, "Broadcast received from bg service");
-            //First get the intent action code. Then handle it accordingly
-            //I could use intent.getAction here instead,
-            // but then i have to make the broadcast receiver accept nullable intent.
-            String intentCode = intent.getStringExtra(StockService.BROADCAST_ACTION_RESULT_CODE);
-            // A single stock was broadcast
-            if (intentCode.equalsIgnoreCase(getResources().getString(R.string.broadcastActionSingleStock))) {
-                Log.d(STOCK_LOG, "Broadcast received, call the handler for single stock result");
-                handleStockResult();
-            }
-            // A list of stocks was broadcast.
-            if (intentCode.equalsIgnoreCase(getResources().getString(R.string.broadcastActionMultiStock))) {
-                Log.d(STOCK_LOG, "Broadcast received, call the handler for stockList result");
-                handleStockListResult();
-            }
-        }
-    };
-
-
-    private void handleStockResult() {
-        //Get the newest version of the list of stock quotes
-        listOfStockQuotes = stockService.getServiceStockList();
-        //Update the size of the listView
-        listPosition = listOfStockQuotes.size();
-        // make an intent to go for details view
-        Intent goToDetailsIntent = new Intent(getApplicationContext(), EditActivity.class)
-                .putExtra(Globals.STOCKOBJECT_EXTRA, listOfStockQuotes.get(listPosition -1));
-        startActivityForResult(goToDetailsIntent, Globals.DETAILS_REQUEST);
-        //And update the list adaptor since we just got the newest list from the database.
-        stockListAdaptor.setListOfStocks(listOfStockQuotes);
-        stockListAdaptor.notifyDataSetChanged();
-    }
-
-    private void handleStockListResult() {
-        listOfStockQuotes = stockService.getServiceStockList();
-        stockListAdaptor.setListOfStocks(listOfStockQuotes);
-        stockListAdaptor.notifyDataSetChanged();
-    }
-
     void bindToStockService() {
         // Method for binding to service
         bindService(new Intent(OverviewActivity.this, StockService.class),
@@ -326,6 +298,63 @@ public class OverviewActivity extends AppCompatActivity {
             Log.d(STOCK_LOG, "Unbinding from service");
             serviceBound = false;
         }
+    }
+
+    //define our broadcast receiver for (local) broadcasts.
+    // Registered and unregistered in onStart() and onStop() methods
+    private BroadcastReceiver overviewBroadcastReceiver = new BroadcastReceiver() {
+        //TODO: Should maybe have a final @Nullable here, if i want to check on intent actions instead.
+        @Override
+        public void onReceive(Context context, final @Nullable Intent intent) {
+            Log.d(STOCK_LOG, "Broadcast received from bg service");
+            // Changed this to trigger on the broadcast action it self, t
+            // here was no need for the intent extra's i used as type of broadcast before.
+            // and although the linter/compiler gives a warning about a possible null pointer exception.
+            // It doesn't seem to have any issues handling the broadcasts.
+            // So i chose to use it, to get less boilerplate code.
+            assert intent != null;
+            if (intent.getAction().equals(StockService.SINGLE_STOCK_BROADCAST_ACTION)) {
+                Log.d(STOCK_LOG, "Broadcast received, call the handler for single stock result");
+                handleStockResult();
+            }
+            else if (intent.getAction().equals(StockService.LIST_OF_STOCKS_BROADCAST_ACTION)) {
+                Log.d(STOCK_LOG, "Broadcast received, call the handler for stockList result");
+                handleStockListResult();
+            }
+        }
+    };
+
+    // ########## OTHER METHODS ###############
+
+    private void handleStockResult() {
+        //Get the newest version of the list of stock quotes
+        listOfStockQuotes = stockService.getServiceStockList();
+        //Update the size of the listView
+        listPosition = listOfStockQuotes.size();
+
+        // make an intent to go for details view
+        Intent goToDetailsIntent = new Intent(getApplicationContext(), EditActivity.class)
+                .putExtra(Globals.STOCKOBJECT_EXTRA, listOfStockQuotes.get(listPosition -1));
+        startActivityForResult(goToDetailsIntent, Globals.DETAILS_REQUEST);
+
+        //And update the list adaptor since we just got the newest list from the database.
+        updateAdaptor();
+//        stockListAdaptor.setListOfStocks(listOfStockQuotes);
+//        stockListAdaptor.notifyDataSetChanged();
+    }
+
+    private void handleStockListResult() {
+        listOfStockQuotes = stockService.getServiceStockList();
+        updateAdaptor();
+//        stockListAdaptor.setListOfStocks(listOfStockQuotes);
+//        stockListAdaptor.notifyDataSetChanged();
+    }
+
+    //TODO: Search for the setListOfStocks method to clean up old comments
+    // Method for updateAdaptor, since i call those 2 commands so many times
+    private void updateAdaptor() {
+        stockListAdaptor.setListOfStocks(listOfStockQuotes);
+        stockListAdaptor.notifyDataSetChanged();
     }
 
     // Used toasts for debugging

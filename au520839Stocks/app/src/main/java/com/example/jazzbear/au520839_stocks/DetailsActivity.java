@@ -29,7 +29,7 @@ public class DetailsActivity extends AppCompatActivity {
     private static final String DETAILS_LOG = "Details_Activity_Log";
     private boolean serviceBound = false;
     Button backButton, editButton, deleteButton;
-    private TextView detailSymbol, detailName, detailPrice, detailAmount;
+    private TextView detailSymbol, detailName, detailPrice, detailAmount, detailPriceDifference;
     private TextView detailSector, detailPrimExchange, detailCurrentVal, detailTimestamp;
     private ServiceConnection serviceConnection;
     private StockService stockService;
@@ -50,14 +50,17 @@ public class DetailsActivity extends AppCompatActivity {
         detailSymbol = findViewById(R.id.symbolDetails);
         detailName = findViewById(R.id.nameDetails);
         detailPrice = findViewById(R.id.priceDetails);
-        detailAmount = findViewById(R.id.stocksDetails);
+        detailAmount = findViewById(R.id.stockAmountDetails);
         detailSector = findViewById(R.id.sectorDetails);
         detailPrimExchange = findViewById(R.id.primExchangeDetails);
         detailCurrentVal = findViewById(R.id.currentValDetails);
+        detailPriceDifference = findViewById(R.id.priceDifferenceDetails);
         detailTimestamp = findViewById(R.id.timestampDetails);
-
+        //Update the ui with new info
         updateDetailsUI();
-        //Setup connection to service
+        // Register to receiver here so we use it when the detailsActivity is started.
+        registerBroadcastReceiver();
+        //Setup connection to service, so we can bind to it and get the stockList.
         setupServiceConnection();
 
         backButton = findViewById(R.id.backBtn);
@@ -88,8 +91,6 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Register to receiver here so we use it when the detailsActivity is in view.
-        registerBroadcastReceiver();
         // bind to service once visible.
         bindToStockService();
     }
@@ -97,13 +98,19 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        // Here we do want to unregister receiver, no need to get broad casts for this activity
-        // when its no longer visible.
-        unregisterBroadcastReceiver();
         // unbind from service when app is stopped, and no longer visible.
         unBindFromStockService();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Here we do want to unregister receiver, no need to get broad casts for this activity
+        // when its no longer used.
+        unregisterBroadcastReceiver();
+    }
+
+    //Put it in a method in case i want to move it to a different lifecycle event.
     private void registerBroadcastReceiver() {
         Log.d(DETAILS_LOG, "registering receiver");
         IntentFilter iFilter = new IntentFilter();
@@ -111,7 +118,7 @@ public class DetailsActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(detailsBroadcastReceiver, iFilter);
     }
-
+    //Put it in a method in case i want to move it to a different lifecycle event.
     private void unregisterBroadcastReceiver() {
         Log.d(STOCK_LOG, "unregistering receivers");
         LocalBroadcastManager.getInstance(this)
@@ -146,6 +153,7 @@ public class DetailsActivity extends AppCompatActivity {
         detailSector.setText(detailsStock.getSector());
         detailPrimExchange.setText(detailsStock.getPrimaryExchange());
         detailCurrentVal.setText(Double.toString(detailsStock.getLatestStockValue()));
+        detailPriceDifference.setText(Double.toString(detailsStock.getPriceDifference()));
         detailTimestamp.setText(detailsStock.getTimeStamp());
     }
 
@@ -187,12 +195,14 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private BroadcastReceiver detailsBroadcastReceiver = new BroadcastReceiver() {
-        @Override //TODO: Might not need to be final nullable
+        @Override
         public void onReceive(Context context, final @Nullable Intent intent) {
             Log.d(DETAILS_LOG, "details activity broadcast received");
+            //This is used by the old get extra check.
+//            String intenCode = intent.getStringExtra(StockService.BROADCAST_ACTION_RESULT_CODE);
 
-            String intenCode = intent.getStringExtra(StockService.BROADCAST_ACTION_RESULT_CODE);
-            if (intenCode.equalsIgnoreCase(getResources().getString(R.string.broadcastActionMultiStock))) {
+            assert intent != null;
+            if (intent.getAction().equals(StockService.LIST_OF_STOCKS_BROADCAST_ACTION)) {
                 List<StockQuote> stockListFromService = stockService.getServiceStockList();
                 // iterate through the list until we find the stock
                 for (StockQuote updateStock : stockListFromService) {

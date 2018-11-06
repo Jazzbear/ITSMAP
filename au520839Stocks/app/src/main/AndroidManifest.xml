@@ -25,7 +25,7 @@
 
         <service
             android:name=".StockService"
-            android:description="@string/service1"
+            android:description="@string/service1Description"
             android:enabled="true"
             android:exported="false"></service>
     </application>

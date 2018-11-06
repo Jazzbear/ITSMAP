@@ -13,7 +13,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        android:text="SymbolView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,9 +21,9 @@
         android:id="@+id/itemCompanyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:text="TextView"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="CompanyName"
         app:layout_constraintBaseline_toBaselineOf="@+id/itemSymbol"
         app:layout_constraintStart_toEndOf="@+id/itemSymbol" />
 
@@ -31,11 +31,15 @@
         android:id="@+id/itemCurrentPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="TextView"
-        app:layout_constraintBaseline_toBaselineOf="@+id/itemTimestamp"
-        app:layout_constraintEnd_toStartOf="@+id/itemPriceDifference" />
+        android:text="currentPrice"
+        app:layout_constraintBaseline_toBaselineOf="@+id/itemCompanyName"
+        app:layout_constraintEnd_toStartOf="@+id/itemPriceDifference"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/itemCompanyName" />
 
     <TextView
         android:id="@+id/itemPriceDifference"
@@ -43,21 +47,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="TextView"
+        android:text="priceChange"
         app:layout_constraintBaseline_toBaselineOf="@+id/itemCurrentPrice"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/itemTimestamp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:text="TextView"
-        app:layout_constraintBaseline_toBaselineOf="@+id/itemCompanyName"
-        app:layout_constraintEnd_toStartOf="@+id/itemCurrentPrice"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/itemCompanyName" />
 </android.support.constraint.ConstraintLayout>

@@ -13,9 +13,6 @@ import com.example.jazzbear.au520839_stocks.Models.StockQuote;
 import com.example.jazzbear.au520839_stocks.Utils.Globals;
 
 public class EditActivity extends AppCompatActivity {
-
-
-    //    static final String EDITVIEW_SAVED = "editview_is_set";
     TextView txtStockCompanyName, txtStockSector;
     EditText editStockValue, editStockAmount;
     Button saveButton, cancelButton;

@@ -34,6 +34,7 @@ public class StockListAdaptor extends BaseAdapter {
         }
         return listOfStocks.size();
     }
+
     //Grab specific listView item.
     @Override
     public Object getItem(int position) {
@@ -45,6 +46,7 @@ public class StockListAdaptor extends BaseAdapter {
         return null;
     }
 
+    //One of the default methods implemented.
     @Override
     public long getItemId(int position) {
         return 0;
@@ -68,8 +70,6 @@ public class StockListAdaptor extends BaseAdapter {
             symbolText.setText(itemListStock.getStockSymbol());
             TextView companyNameText = convertView.findViewById(R.id.itemCompanyName);
             companyNameText.setText(itemListStock.getCompanyName());
-            TextView timestampText = convertView.findViewById(R.id.itemTimestamp);
-            timestampText.setText(itemListStock.getTimeStamp());
             TextView priceText = convertView.findViewById(R.id.itemCurrentPrice);
             priceText.setText(Double.toString(itemListStock.getLatestStockValue()));
             TextView priceDifference = convertView.findViewById(R.id.itemPriceDifference);
@@ -80,6 +80,7 @@ public class StockListAdaptor extends BaseAdapter {
         return null;
     }
 
+    //TODO: Could probably be removed.
     public List<StockQuote> getListOfStocks() {
         return listOfStocks;
     }

@@ -1,11 +1,18 @@
 package com.example.jazzbear.au520839_stocks;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,10 +30,13 @@ import com.example.jazzbear.au520839_stocks.Models.StockQuote;
 import com.example.jazzbear.au520839_stocks.Utils.Globals;
 import com.example.jazzbear.au520839_stocks.Utils.StockJsonParser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static com.example.jazzbear.au520839_stocks.Utils.Globals.STOCK_LOG;
@@ -34,52 +44,42 @@ import static com.example.jazzbear.au520839_stocks.Utils.Globals.STOCK_LOG;
 public class StockService extends Service {
     // for broadcasting a single stock
     public static final String SINGLE_STOCK_BROADCAST_ACTION = "com.jazzbear.android.SINGLE_STOCK_BROADCAST_ACTION";
-//    public static final String EXTRA_STOCK_RESULT = "single_stock_intent_extra";
-    //    public static final String EXTRA_STOCK_CALL_SYMBOL = "stock_symbol_intent_extra";
     // For broadcasting list of stocks
     public static final String LIST_OF_STOCKS_BROADCAST_ACTION = "com.jazzbear.android.LIST_OF_STOCKS_BROADCAST_ACTION";
-//    public static final String EXTRA_STOCK_LIST_RESULT = "stock_list_update_intent_extra";
+
+    //TODO: REMOVE THIS IF NOT USED
     // This is so we can set it to either to either single_stock_action or multi_stock_action
     public static final String BROADCAST_ACTION_RESULT_CODE = "extra_for_action_decision";
-
-    //TODO: Should be removed from here and in overviewactivity.
-    //TODO: Not being used anymore due to error handling done in response
-//    public static final String RESULT_SUCCESS_INTENT_CODE = "RESULT_SUCCESS";
-//    public static final String RESULT_FAILURE_INTENT_CODE = "RESULT_FAILURE";
-
-    // For notifications
-//    private static final int NOTIFY_ID = 1337;
-//    private static final String CHANNEL_ID = "stock_channel";
 
     private boolean started = false;
     private boolean running = false;
     private final IBinder stockServiceBinder = new StockServiceBinder();
     private StockDatabase db;
     RequestQueue rQueue;
-//    private String csvSymbols;
-//    private List<String> databaseStockSymbols = new ArrayList<>();
 
+    NotificationCompat.Builder serviceNotification = null; // Needed so we change it in multiple places.
+    NotificationManagerCompat serviceNotifyManager;
 
     // Implicit constructor
     public StockService() {
     }
 
-    // This is used as the updated list.
-    // When a update stock list request is done, the list is set.
-    // and we we send a broadcast method to the activities bound to the service.
-    // then they can access the new list through the public getter and setters.
+    // This is used as the updated list, when the list is updated, a broadcast is sent,
+    // to the services that implement the binder can then call the public method to get the list.
     private List<StockQuote> serviceStockList;
+    // Unique symbol list, making sure we only ever query or request for one occurrence of each symbol
     private List<String> uniqueSymbolList = new ArrayList<>();
 
     public List<StockQuote> getServiceStockList() {
         return serviceStockList;
     }
-    // TODO: Setter might not be needed
-//    public void setResponseStockList(List<StockQuote> serviceStockList) {
-//        this.serviceStockList = serviceStockList;
-//    }
+    // The setter needs to be synchronized so that there are no overlaps when updating the list.
+    private synchronized void setServiceStockList(List<StockQuote> serviceStockList) {
+        this.serviceStockList = serviceStockList;
+    }
 
-    // Returns the StockService context interface so we can bind to the service from activities
+
+    // Returns the StockService context interface reference so we can bind to the service from activities
     // and access the StockService's public methods. This is our only gate for communication.
     public class StockServiceBinder extends Binder {
         StockService getService() {
@@ -96,7 +96,7 @@ public class StockService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(STOCK_LOG, "Stock service onCreate");
+        Log.d(STOCK_LOG, "Stock service onCreate, initializing database instance");
         db = StockDatabase.getDatabaseInstance(this);
         serviceStockList = new ArrayList<>(); // was null when in onStart
     }
@@ -107,7 +107,7 @@ public class StockService extends Service {
         //TODO: IMPORTANT!!!!!!!!!!! THIS MIGHT NEED TO BE REMOVED LATER.
         //TODO: Depends if the service keeps running once the app closes etc. Because it should.
         // Cleanup so the thread does not continue to run in the background
-//        running = false;
+        running = false;
         Log.d(STOCK_LOG, "Service destroyed");
     }
 
@@ -116,28 +116,46 @@ public class StockService extends Service {
         // Inspired by Stunt code from Lecture 6
         //Wait until something starts the service, with either startService() or by binding to it.
         if (!started && intent != null) {
-            started = true; //flip it so it stays started
             // Instantiate new request queue if one doesn't exist.
             if (rQueue == null) {
                 rQueue = Volley.newRequestQueue(this);
             }
-            // once something starts the service we want to start the runnable
+            //First check if inital setup has been made. I.e a database exist and is populated.
+            if (!checkInitDataBase()) {
+                firstTimeDataSetup(); // if not, run the setup methods.
+            }
+            started = true; //flip it so it stays started, until service is destroyed.
+            // once something starts the service we want to start the runnable as well
             running = true;
+
+            // Then afterwards setup notification channel etc.
+            setupNotifications();
+
+
+
             // Setup the runnable
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    //We want to make sure we only request stocks that exists in the database
+
 
                     //TODO: Need to fix this right now i will just end up matching with and empty database list down in the async task.
-                    serviceStockList = db.stockQuoteDao().getAllStocks();
-                    firstTimeUpdateOverview();
+                    //We want to make sure we only request stocks that exists in the database,
+                    // by getting them first. And then setting the local serviceStockList.
+                    setServiceStockList(db.stockQuoteDao().getAllStocks());
+                    broadcastDatabaseInitSuccess(); //TODO: Should maybe be removed as the same broadcast is called inside first time setup.
+
+                    // now iterate through the list updated from the database. And then stores it in the globals list
+                    // Then later the global list is run through the csv maker which also populates a unique symbol list.
+                    // using hash-map, that way, all queries and requests are always only once per. unique stock symbol.
                     for (StockQuote index : serviceStockList) {
                         Globals.stockSymbolList.add(index.getStockSymbol());
                     }
+
                     while (running) {
                         try {
-                            String csvSymbolString = makeCsvSymbolString();
+                            // make CSV from the global symbol list.
+                            String csvSymbolString = makeCsvSymbolString(Globals.stockSymbolList);
                             if (!csvSymbolString.equals("")) {
                                 //TODO: This could also be handled by waiting to append the symbol
                                 //TODO: to the global symbolList till after the request comes back.
@@ -168,24 +186,97 @@ public class StockService extends Service {
         return START_STICKY;
     }
 
-    private void firstTimeUpdateOverview() {
-        Intent firstTimeUpdate = new Intent();
-        firstTimeUpdate.setAction(LIST_OF_STOCKS_BROADCAST_ACTION);
-        firstTimeUpdate.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionMultiStock));
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(firstTimeUpdate);
+    // used the method from here: https://stackoverflow.com/questions/3386667/query-if-android-database-exists
+    // was tipped about it from my friend Jonas, since we had helped communicated and helped each other with the exercise.
+    // i had shown him alot of the service methods, broad casting and UI, and i had made the json parser.
+    private boolean checkInitDataBase() {
+        SQLiteDatabase checkRoomDB = null;
+        try {
+            //Check if the database by doing a read on the local database created with app name,
+            //which is the same as the one defined in the gradle.
+            checkRoomDB = SQLiteDatabase.openDatabase(StockDatabase.DATABASE_PATH,
+                    null, SQLiteDatabase.OPEN_READONLY);
+            checkRoomDB.close(); // Closing the connection afterwards so we don't have a hanging connection
+        } catch (SQLException e) {
+            Log.d(STOCK_LOG, "No database found. Error: " + e);
+            e.printStackTrace();
+        }
+        // use the local SQLite instance to flip the boolean, which depends on whether we get an instance or not.
+        return checkRoomDB != null;
+    }
+
+    // First time data setup volley requests are handled here.
+    private void firstTimeDataSetup() {
+        String initSymbolsCsv = makeCsvSymbolString(Globals.initDataBaseSymbolList);
+        String initRequestUrl = Globals.STOCK_MARKET_ENDPOINT + initSymbolsCsv + Globals.STOCK_QUOTE_FILTER_STRING;
+
+        StringRequest initStockListRequest = new StringRequest(Request.Method.GET, initRequestUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(STOCK_LOG, "First time setup request, response is: " + response);
+                        handleFirstTimeData(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(STOCK_LOG, "Error getting init list.");
+                        //Make the bad request toast.
+                        Toast badRequestToast = Toast.makeText(getApplicationContext(), "Error getting init list.", Toast.LENGTH_SHORT);
+                        //Set the gravity so the toast appears in center of the device screen.
+                        badRequestToast.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL, 0, 0);
+                        badRequestToast.show();
+                    }
+                });
+        rQueue.add(initStockListRequest);
+    }
+
+    private void handleFirstTimeData(final String response) {
+
+        @SuppressLint("StaticFieldLeak")
+        AsyncTask<Void, Void, Void> asyncSaveAndBroadcastInitData = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Log.d(STOCK_LOG, "Saving first time data to database with response data: " + response);
+                // The response is handled, by parsing the json data to a stockQuote list, which is saved,
+                // in the database, and then a query afterwards to get all info and autogenerated id's
+                // for the serviceStockList. This is is need for matching later.
+                List<StockQuote> initStockList = StockJsonParser.parseStockListJson(response, uniqueSymbolList);
+                db.stockQuoteDao().insertStockList(initStockList); // inserting the list to the database
+                setServiceStockList(db.stockQuoteDao().getAllStocks()); //getting out the list again, so we also have id's
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                //Broadcast that the initial data is ready.
+                //TODO: Make the notification thhingy
+                //setup a notification now that the list is updated.
+                serviceNotification = makeUpdateNotification();
+                //And then create and notify the manager with it.
+                serviceNotifyManager.notify(Globals.NOTIFY_ID, serviceNotification.build());
+                // now broadcast it to the overview activity so it can get the initial list of 10 stocks.
+                Intent firstTimeUpdate = new Intent(); //TODO: Should maybe be in a method? it seems to be called twice.
+                firstTimeUpdate.setAction(LIST_OF_STOCKS_BROADCAST_ACTION);
+//        firstTimeUpdate.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionMultiStock));
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(firstTimeUpdate);
+            }
+        };
+        asyncSaveAndBroadcastInitData.execute();
     }
 
     // ################# STOCK REQUEST METHODS #################
 
-    private String makeCsvSymbolString() {
+    private String makeCsvSymbolString(List<String> inputList) {
         int count = 0; // iterator
         StringBuilder csvString = new StringBuilder();
         //First check if there are any symbols in the list
-        if (!Globals.stockSymbolList.isEmpty()) {
+        if (!inputList.isEmpty()) {
             //Since the global symbolist can have more than one of the same symbol.
             //But for both the request and a later database query we only want 1 of each symbol.
             //Create a hash-map for the symbolist, that way multiple occurrences of the same symbol is ignored.
-            Set<String> symbol_hash_map = new HashSet<>(Globals.stockSymbolList);
+            Set<String> symbol_hash_map = new HashSet<>(inputList);
             uniqueSymbolList.clear();
             uniqueSymbolList.addAll(symbol_hash_map); //Add the uniquely hashed list to a local symbol list.
 
@@ -195,7 +286,7 @@ public class StockService extends Service {
                 //Then build a comma separated string.
                 csvString.append(symbol);
                 // Check if its the last item in the list, if not append a comma.
-                if (count++ != Globals.stockSymbolList.size() - 1) {
+                if (count++ != inputList.size() - 1) {
                     csvString.append(",");
                 }
             }
@@ -226,7 +317,7 @@ public class StockService extends Service {
 //        Globals.stockSymbolList.add(requestSymbol); //TODO: Should be added to the stock symbol list only after the success
 
         // Make a new request string with a single symbol in it.
-        String requestUrl = Globals.STOCK_MARKET_STRING + requestSymbol + Globals.STOCK_QUOTE_FILTER_STRING;
+        String requestUrl = Globals.STOCK_MARKET_ENDPOINT + requestSymbol + Globals.STOCK_QUOTE_FILTER_STRING;
 
         //Setup the request, with the single symbol.
         StringRequest symbolRequest = new StringRequest(Request.Method.GET, requestUrl,
@@ -239,10 +330,10 @@ public class StockService extends Service {
                         if (response.length() > 2) {
                             // on successful request handle response
                             Log.d(STOCK_LOG, "Request successful, the stock was found");
-                            asyncHandleSingleStockResponse(response, requestSymbol);
                             //Since the request was a success add it to the global symbol list
                             //So it automatically gets updated on next auto request
                             Globals.stockSymbolList.add(requestSymbol);
+                            asyncHandleSingleStockResponse(response, requestSymbol);
                         } else {
                             //If we get an empty body, cause the symbol wasn't found.
                             //Make a toast to the user explaining what happened.
@@ -262,13 +353,15 @@ public class StockService extends Service {
 
     //Save and broadcast a single stock, params has to be final so they can be accessed of the inner async body.
     private void asyncHandleSingleStockResponse(final String result, final String requestSymbol) {
+
         @SuppressLint("StaticFieldLeak")
         AsyncTask<Void, Void, Void> asyncInsertSingleStock = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
+
                 StockQuote newStockQuote = StockJsonParser.parseSingleStockJson(result, requestSymbol);
                 //Set the purchase value to the latest price, the first time its created.
-//                newStockQuote.setStockPurchasePrice(newStockQuote.getLatestStockValue());
+                newStockQuote.setStockPurchasePrice(newStockQuote.getLatestStockValue());
                 //Insert the new stock in the database and then add it to the local list.
                 //get the stock id after the insert
                 newStockQuote.setUid(db.stockQuoteDao().insertSingleStock(newStockQuote));
@@ -283,7 +376,8 @@ public class StockService extends Service {
                 // Set the broadcast action filter
                 broadcastIntent.setAction(SINGLE_STOCK_BROADCAST_ACTION);
                 // Broadcast action code for single stock
-                broadcastIntent.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionSingleStock));
+                //TODO: No longer seems needed
+//                broadcastIntent.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionSingleStock));
                 Log.d(STOCK_LOG, "Broadcasting single stock:\n" + result + "\n and symbol used:\n" + requestSymbol);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent); // send it off to be caught in the other thread
             }
@@ -292,7 +386,8 @@ public class StockService extends Service {
     }
 
     public void requestRefreshStockList() {
-        requestAllStocksInList(makeCsvSymbolString());
+        // Call with the global symbol list
+        requestAllStocksInList(makeCsvSymbolString(Globals.stockSymbolList));
         Log.d(STOCK_LOG, "Forced update request from user");
     }
 
@@ -302,7 +397,7 @@ public class StockService extends Service {
     // for requesting a list of stocks
     private void requestAllStocksInList(String requestCsvSymbols) {
         // Make the request string, using the comma separated string of symbols.
-        String requestUrl = Globals.STOCK_MARKET_STRING + requestCsvSymbols + Globals.STOCK_QUOTE_FILTER_STRING;
+        String requestUrl = Globals.STOCK_MARKET_ENDPOINT + requestCsvSymbols + Globals.STOCK_QUOTE_FILTER_STRING;
         //Setup the request with the url
         StringRequest symbolListRequest = new StringRequest(Request.Method.GET, requestUrl,
                 new Response.Listener<String>() {
@@ -355,10 +450,15 @@ public class StockService extends Service {
             // After the async task returns broadcast the changes
             @Override
             protected void onPostExecute(Void aVoid) {
+                //make an update notification.
+                serviceNotification = makeUpdateNotification();
+                serviceNotifyManager.notify(Globals.NOTIFY_ID, serviceNotification.build());
+
                 Intent broadcastIntent = new Intent();
                 broadcastIntent.setAction(LIST_OF_STOCKS_BROADCAST_ACTION); // Set the broadcast action filter
                 // Broadcast action code for list of stocks
-                broadcastIntent.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionMultiStock));
+                //TODO: No longer seems needed
+//                broadcastIntent.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionMultiStock));
                 Log.d(STOCK_LOG, "Broadcasting list of stock:" + response);
                 // send it off to be caught in the mainActivity thread
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
@@ -369,6 +469,7 @@ public class StockService extends Service {
 
     //################# UPDATE SINGLE STOCKS IN DATABASE HERE #################
 
+    //Used to update the single stock after changing its amount of stocks and price in editActivity
     public void asyncUpdateSingleStock(final StockQuote stockQuote) {
         @SuppressLint("StaticFieldLeak")
         AsyncTask<Void, Void, Void> asyncUpdateSingleStock = new AsyncTask<Void, Void, Void>() {
@@ -387,9 +488,12 @@ public class StockService extends Service {
     public void asyncDeleteSingleStock(final StockQuote stockQuote) {
         for (Iterator<String> iterator = Globals.stockSymbolList.listIterator(); iterator.hasNext(); ) {
             //We iterate through the list till we find the stock symbol,
-            // then remove it from the global symbol list.
+            // then remove it from the global symbol list, so that it is no longer included in auto updates.
             if (iterator.next().equals(stockQuote.getStockSymbol())) {
                 iterator.remove();
+                Log.d(STOCK_LOG, "Removing Global stock symbol: " + iterator);
+                List<String> testList = Globals.stockSymbolList;
+                Log.d(STOCK_LOG, "Now the list holds: " + Globals.stockSymbolList);
                 break;
             }
         }
@@ -403,6 +507,69 @@ public class StockService extends Service {
             }
         };
         asyncDeleteSingleStock.execute();
+    }
+
+
+    // ############################## NOTIFICATION SETUP ##############################
+
+    //TODO: Method for setup notification done
+    // To help me with this i used Kasper Løvborg Jensens ServiceDemo from lecture 6,
+    // and the android developer guide: https://developer.android.com/training/notify-user/build-notification
+    private void setupNotifications() {
+        /*  Setup up notification channel, we check if the api level is higher than 26,
+         * As previous to that creating and registering custom channels was not implemented.
+         * The reason this is not the best way to check here, as Kasper wrote in his stunt code, ("don't do this at home")
+         * is because, when we try to push changes to the channel later, but the app is hosted on an,
+         * older android device, it would cause problems.
+         * So really to proper handle it, all places that uses the notification should, check version first.
+         * And then decide to use notifications or not. */
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            CharSequence channelName = getString(R.string.notifyChannelName); //Set channel name.
+            String channelDescription = getString(R.string.notifyChannelDescription); // for channel description, to user.
+            int importanceLevel = NotificationManager.IMPORTANCE_LOW; // medium level importance
+            //Create a new channel.
+            NotificationChannel serviceChannel = new NotificationChannel(Globals.CHANNEL_ID, channelName, importanceLevel);
+            serviceChannel.setDescription(channelDescription);
+            // Now register the channel in the system.
+            NotificationManager serviceNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            serviceNotifyManager.createNotificationChannel(serviceChannel);
+        }
+        // Set the local notification manager. And use it with the service as context.
+        serviceNotifyManager = NotificationManagerCompat.from(this);
+        //Create a new notification about the initial update
+        serviceNotification = makeUpdateNotification();
+        // And now start the service as a foreground service with the new notification.
+        startForeground(Globals.NOTIFY_ID, serviceNotification.build());
+    }
+
+    //TODO: Maybe try change this into 2 different setup?
+    // First time notification builder
+    private NotificationCompat.Builder makeUpdateNotification() {
+        return new NotificationCompat.Builder(this, Globals.CHANNEL_ID)
+                .setContentTitle(getText(R.string.notificationTitle))
+                .setContentText(getText(R.string.notificationUpdateString) + " " + getCurrentDateTime())
+                .setSmallIcon(R.mipmap.ic_stockmarket_round);
+//                .setTicker(getText(R.string.notificationTicker)); //TODO: maybe no ticker, and maybe try with channel id aswell.
+//                .setChannelId(Globals.CHANNEL_ID)
+    }
+
+    // for getting a current date and time stamp for notifications
+    private String getCurrentDateTime() {
+        Date date = new Date(); //Get the current data and time.
+        Locale currentLocale = getResources().getConfiguration().locale; //TODO: remove this, it s for testing locale
+//        currentLocale.getCountry().equals() //TODO: change it to handle danish locale aswell
+        //Get a new simple format: For english in following order: year, month date, hour, minute and seconds
+        SimpleDateFormat currentDateAndTime = new SimpleDateFormat("E yyyy.MM.dd HH:mm:ss z");
+        return currentDateAndTime.format(date);
+    }
+
+    //Used to immediately init and update the view.
+    private void broadcastDatabaseInitSuccess() {
+        Intent firstTimeUpdate = new Intent();
+        firstTimeUpdate.setAction(LIST_OF_STOCKS_BROADCAST_ACTION);
+//        firstTimeUpdate.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionMultiStock));
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(firstTimeUpdate);
     }
 
 }

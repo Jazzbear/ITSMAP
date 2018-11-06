@@ -25,6 +25,7 @@
     <string name="sectorCat">Sektor:</string>
     <string name="primaryExchangeCat">Primær Udveksling:</string>
     <string name="latestValueCat">Nuværende værdi:</string>
+    <string name="priceDifferenceCat">Pris forskel:</string>
     <string name="latestTimeStampCat">Sidst opdateret:</string>
     <string name="purchaseValueCat">Købt for:</string>
 
@@ -51,10 +52,11 @@
     <string name="positiveDialogBtnText">Tilføj</string>
     <string name="negativeDialogBtnText">Annuller</string>
     <string name="badStockRequestToastText">
-        Aktien med det indtastede symbol kunne ikke findes.
-        Vær sikker på du indtaster et eksiterende symbol med STORE bogstaver.
-        The stock of that symbol was not found.
-        Make sure you input an existing stock symbol in uppercase letters</string>
+        Aktien med det indtastede symbol kunne ikke findes. Indtast et eksisterende symbol,
+        fra listen af symboler på IEXs hjemmeside.
+    </string>
+    <string name="notificationUpdateString">Aktier sidst updateret:</string>
+    <string name="notificationTicker">En forgrunds service til at opdatere dine aktier</string>
 
     <!--Broadcast receiver related-->
     <string name="err_bg_service_result">ERROR: Fejl kunne ikke hente resultat</string>

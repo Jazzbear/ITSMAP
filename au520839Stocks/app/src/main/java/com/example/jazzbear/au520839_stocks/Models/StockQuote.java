@@ -18,7 +18,7 @@ public class StockQuote implements Parcelable {
     private String stockSymbol;
     private String primaryExchange;
     private double stockPurchasePrice;
-    private int amountOfStocks; //getters og setters need
+    private int amountOfStocks;
     private double latestStockValue;
     private String timeStamp;
     private double priceDifference;

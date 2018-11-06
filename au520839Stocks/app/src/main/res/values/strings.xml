@@ -24,6 +24,7 @@
     <string name="sectorCat">Sector:</string>
     <string name="primaryExchangeCat">Primary Exchange:</string>
     <string name="latestValueCat">Current Value:</string>
+    <string name="priceDifferenceCat">Price difference:</string>
     <string name="latestTimeStampCat">Last updated:</string>
     <string name="purchaseValueCat">Purchased for:</string>
 
@@ -50,13 +51,18 @@
     <string name="positiveDialogBtnText">Add</string>
     <string name="negativeDialogBtnText">Cancel</string>
     <string name="badStockRequestToastText">
-        The stock of that symbol was not found.
-        Make sure you input an existing stock symbol in UPPERCASE letters</string>
+        The stock of that symbol was not found. Make sure you input an existing stock-
+        symbol, from IEX list of valid symbols.</string>
+    <string name="notificationUpdateString">Stock info were last updated at:</string>
 
     <!--Service related-->
-    <string name="notifyChannelName" translatable="false">Stock service channel</string>
-    <string name="notifyChannelDescription" translatable="false">Channel used for notifying user of changes to his stock portfolio</string>
-    <string name="service1" translatable="false">A started service that runs in the background</string>
+    <string name="service1Description" translatable="false">A started service that runs in the background</string>
+    <string name="notificationTitle" translatable="false">Stock Monitor Channel</string>
+    <string name="notifyChannelName" translatable="false">Stock_service_channel</string>
+    <string name="notifyChannelDescription" translatable="false">Channel used for notifying user of
+        changes to his stock portfolio</string>
+    <string name="notificationTicker">A foreground service for updating your stocks</string>
+
 
     <!--Broadcast receiver related-->
     <string name="err_bg_service_result">ERROR: could not retrieve result</string>
