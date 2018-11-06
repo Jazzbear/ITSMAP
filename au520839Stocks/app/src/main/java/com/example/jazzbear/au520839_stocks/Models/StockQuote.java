@@ -8,6 +8,9 @@ import android.os.Parcelable;
 
 import java.util.UUID;
 
+//The new stock class. Instead of changing the old i just made a new one,
+//Seemed easier to get started right away with. Then i didn't have to worry about the activities yet.
+//And it made it easier for testing early.
 @Entity
 public class StockQuote implements Parcelable {
 
@@ -95,7 +98,6 @@ public class StockQuote implements Parcelable {
         return latestStockValue - stockPurchasePrice;
     }
 
-    //TODO: Probable not needed
     public void setPriceDifference(double priceDifference) {
         this.priceDifference = priceDifference;
     }
@@ -112,7 +114,6 @@ public class StockQuote implements Parcelable {
         return latestStockValue * amountOfStocks;
     }
 
-    //TODO: Probable not needed
     public void setTotalEarnings(double totalEarnings) {
         this.totalEarnings = totalEarnings;
     }

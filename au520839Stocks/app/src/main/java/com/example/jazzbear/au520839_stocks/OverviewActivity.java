@@ -52,7 +52,8 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupServiceConnection();
+        // Setup connection, so we can bind to stockService later, and we also start the service here.
+        setupServiceConnection(); //Needs to be connected before we handle saved instance state.
         // Recreating after a onDestroy and instance state saved.
         if (savedInstanceState != null) {
             // On rotation or other means that destroy and recreate the app,
@@ -67,16 +68,14 @@ public class OverviewActivity extends AppCompatActivity {
 
         //Setup listView
         stockListView = findViewById(R.id.listViewStocks);
-        listOfStockQuotes = new ArrayList<StockQuote>(){};
+        listOfStockQuotes = new ArrayList<StockQuote>() {
+        };
         //Register broadcast receiver and filters
         registerBroadcastReceiver();
-        // Setup connection, so we can bind to stockService later, and we also start the service here.
-//        setupServiceConnection();
         // Setup dialog window so we can use it when adding new stock symbol
         setupAddStockDialog();
         // Setup the adaptor
         setupListViewAdaptor();
-
 
 
         addButton = findViewById(R.id.addStockBtn);
@@ -114,7 +113,7 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //TODO: Maybe i dont want to unregister?
+        //TODO: Maybe i don't want to unregister?
         unregisterBroadcastReceiver();
     }
 
@@ -124,7 +123,6 @@ public class OverviewActivity extends AppCompatActivity {
         if (requestCode == Globals.DETAILS_REQUEST) {
             if (resultCode == RESULT_OK) {
                 //Update the stock object and update the ui
-//                assert data != null;
                 if (data != null) {
                     //When we get some data from details activity intent result.
                     // First get the data
@@ -136,11 +134,8 @@ public class OverviewActivity extends AppCompatActivity {
                     stockService.asyncUpdateSingleStock(stockQuote);
                     listOfStockQuotes.set(listPosition - 1, stockQuote);
                     updateAdaptor();
-//                    stockListAdaptor.setListOfStocks(listOfStockQuotes);
-//                    stockListAdaptor.notifyDataSetChanged();
                 }
-            }
-            else if (resultCode == Globals.RESULT_DELETE) {
+            } else if (resultCode == Globals.RESULT_DELETE) {
                 //Get the stock we want to delete
                 StockQuote stockToDelete = listOfStockQuotes.get(listPosition - 1);
                 //delete it and remove it from the list.
@@ -150,13 +145,10 @@ public class OverviewActivity extends AppCompatActivity {
                 listOfStockQuotes.remove(listPosition - 1);
                 //update the list view adaptor with the changes
                 updateAdaptor();
-//                stockListAdaptor.setListOfStocks(listOfStockQuotes);
-//                stockListAdaptor.notifyDataSetChanged();
             }
         }
     }
 
-    //TODO: Need to change this to handle the stocklist
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //We save the list position of the view so when the activity gets destroyed,
@@ -213,7 +205,7 @@ public class OverviewActivity extends AppCompatActivity {
                 }).setNegativeButton(R.string.negativeDialogBtnText, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Does nothing for no - should just cancel the window i guess
+                // Nothing to be done here - default implementation does what it needs.
             }
         });
         // Create the dialog view with the above specifications, so we can use it later.
@@ -231,9 +223,6 @@ public class OverviewActivity extends AppCompatActivity {
                 // we set the current list position so we stay in that position,
                 // when the user comes back from details or edit activity.
                 StockQuote listViewStockItem = listOfStockQuotes.get(position);
-                //TODO save the position so we know what to update/remove on return.
-                // TODO: Remember to save it in savedInstanceState
-
                 listPosition = position + 1;
                 //Provided a new stock item is added to the list view.
                 if (listViewStockItem != null) {
@@ -270,8 +259,6 @@ public class OverviewActivity extends AppCompatActivity {
                 //TODO: For listview after onSaveInstanceState
                 listOfStockQuotes = stockService.getServiceStockList();
                 updateAdaptor();
-//                stockListAdaptor.setListOfStocks(listOfStockQuotes);
-//                stockListAdaptor.notifyDataSetChanged();
             }
 
             @Override
@@ -286,7 +273,6 @@ public class OverviewActivity extends AppCompatActivity {
             }
         };
         // Start the service so it runs in the background regardless
-        //TODO: if this dont work make an intent first instead of this anonymous intent method
         startService(new Intent(this, StockService.class));
     }
 
@@ -314,8 +300,8 @@ public class OverviewActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, final @Nullable Intent intent) {
             Log.d(STOCK_LOG, "Broadcast received from bg service");
-            // Changed this to trigger on the broadcast action it self, t
-            // here was no need for the intent extra's i used as type of broadcast before.
+            // Changed this to trigger on the broadcast action it self,
+            // there was no need for the intent extra's i used as type of broadcast before.
             // and although the linter/compiler gives a warning about a possible null pointer exception.
             // It doesn't seem to have any issues handling the broadcasts.
             // So i chose to use it, to get less boilerplate code.
@@ -323,8 +309,7 @@ public class OverviewActivity extends AppCompatActivity {
             if (intent.getAction().equals(StockService.SINGLE_STOCK_BROADCAST_ACTION)) {
                 Log.d(STOCK_LOG, "Broadcast received, call the handler for single stock result");
                 handleStockResult();
-            }
-            else if (intent.getAction().equals(StockService.LIST_OF_STOCKS_BROADCAST_ACTION)) {
+            } else if (intent.getAction().equals(StockService.LIST_OF_STOCKS_BROADCAST_ACTION)) {
                 Log.d(STOCK_LOG, "Broadcast received, call the handler for stockList result");
                 handleStockListResult();
             }
@@ -341,23 +326,18 @@ public class OverviewActivity extends AppCompatActivity {
 
         // make an intent to go for details view
         Intent goToDetailsIntent = new Intent(getApplicationContext(), EditActivity.class)
-                .putExtra(Globals.STOCK_OBJECT_EXTRA, listOfStockQuotes.get(listPosition -1));
+                .putExtra(Globals.STOCK_OBJECT_EXTRA, listOfStockQuotes.get(listPosition - 1));
         startActivityForResult(goToDetailsIntent, Globals.DETAILS_REQUEST);
 
         //And update the list adaptor since we just got the newest list from the database.
         updateAdaptor();
-//        stockListAdaptor.setListOfStocks(listOfStockQuotes);
-//        stockListAdaptor.notifyDataSetChanged();
     }
 
     private void handleStockListResult() {
         listOfStockQuotes = stockService.getServiceStockList();
         updateAdaptor();
-//        stockListAdaptor.setListOfStocks(listOfStockQuotes);
-//        stockListAdaptor.notifyDataSetChanged();
     }
 
-    //TODO: Search for the setListOfStocks method to clean up old comments
     // Method for updateAdaptor, since i call those 2 commands so many times
     private void updateAdaptor() {
         stockListAdaptor.setListOfStocks(listOfStockQuotes);

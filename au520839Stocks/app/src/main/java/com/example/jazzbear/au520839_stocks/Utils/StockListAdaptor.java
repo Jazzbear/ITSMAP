@@ -89,7 +89,6 @@ public class StockListAdaptor extends BaseAdapter {
         return null;
     }
 
-    //TODO: Could probably be removed.
     public List<StockQuote> getListOfStocks() {
         return listOfStocks;
     }

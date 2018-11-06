@@ -53,8 +53,10 @@ public class StockService extends Service {
     private final IBinder stockServiceBinder = new StockServiceBinder();
     private StockDatabase db;
     RequestQueue rQueue;
+    private int wait_time = 2*60*1000; // 2 minutes wait
 
-    NotificationCompat.Builder serviceNotification = null; // Needed so we change it in multiple places.
+    // Needed so we change it in multiple places.
+    NotificationCompat.Builder serviceNotification = null;
     NotificationManagerCompat serviceNotifyManager;
 
     // Implicit constructor
@@ -106,8 +108,6 @@ public class StockService extends Service {
         // TODO: and go into the activity. Then if its swiped it should close the notification
         // TODO: and kill the service perhaps.
 
-
-        //TODO: IMPORTANT!!!!!!!!!!! THIS MIGHT NEED TO BE REMOVED LATER.
         //TODO: Depends if the service keeps running once the app closes etc. Because it should.
         // Cleanup so the thread does not continue to run in the background
         running = false;
@@ -137,10 +137,10 @@ public class StockService extends Service {
                     //We want to make sure we only request stocks that exists in the database,
                     // by getting them first. And then setting the local serviceStockList.
                     setServiceStockList(db.stockQuoteDao().getAllStocks());
-                    broadcastDatabaseInitSuccess(); //TODO: Should maybe be removed as the same broadcast is called inside first time setup.
+                    broadcastDatabaseStockListUpdate();
 
-                    // now iterate through the list updated from the database. And then stores it in the globals list
-                    // Then later the global list is run through the csv maker which also populates a unique symbol list.
+                    // now iterate through the list updated from the database. And then stores it in the local list
+                    // Then later the local list is run through the csv maker which also populates a unique symbol list.
                     // using hash-map, that way, all queries and requests are always only once per. unique stock symbol.
                     for (StockQuote index : serviceStockList) {
                         localStockSymbolList.add(index.getStockSymbol());
@@ -148,22 +148,18 @@ public class StockService extends Service {
 
                     while (running) {
                         try {
-                            // make CSV from the global symbol list.
+                            // make CSV from the local symbol list.
                             String csvSymbolString = makeCsvSymbolString();
                             if (!csvSymbolString.equals("")) {
-                                //TODO: This could also be handled by waiting to append the symbol
-                                //TODO: to the global symbolList till after the request comes back.
-
-                                // When the symbol list gets populated after a user adds an item
-                                // wait a bit first so previous operations with singlesStockRequest
-                                // are sure to be done.
-//                                Thread.sleep(5 * 1000);
+                                // When the symbol list gets populated after init setup,
+                                // or just as long as something is in the symbolList/database.
+                                // then run auto updates on the list.
                                 requestAllStocksInList(csvSymbolString);
                             } else {
                                 Log.d(STOCK_LOG, "No symbols added to the list yet");
                             }
-                            // TODO: Need to be changed so we wait 2 MINUTTES!
-                            Thread.sleep(10 * 1000); // wait 15 seconds
+                            //Wait 2 minutes before calling again
+                            Thread.sleep(wait_time);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                             Log.d(STOCK_LOG, "Thread was interrupted");
@@ -181,8 +177,6 @@ public class StockService extends Service {
     }
 
     // used the method from here: https://stackoverflow.com/questions/3386667/query-if-android-database-exists
-    // was tipped about it from my friend Jonas, since we had helped communicated and helped each other with the exercise.
-    // i had shown him alot of the service methods, broad casting and UI, and i had made the json parser.
     private boolean checkInitDataBase() {
         SQLiteDatabase checkRoomDB = null;
         try {
@@ -201,6 +195,7 @@ public class StockService extends Service {
 
     // First time data setup volley requests are handled here.
     private void firstTimeDataSetup() {
+        //Populate the local list with the global list with 10 initial symbols
         localStockSymbolList = Globals.initDataBaseSymbolList;
         String initSymbolsCsv = makeCsvSymbolString();
         String initRequestUrl = Globals.STOCK_MARKET_ENDPOINT + initSymbolsCsv + Globals.STOCK_QUOTE_FILTER_STRING;
@@ -249,17 +244,12 @@ public class StockService extends Service {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                //Broadcast that the initial data is ready.
-                //TODO: Make the notification thhingy
                 //setup a notification now that the list is updated.
                 serviceNotification = makeUpdateNotification();
                 //And then create and notify the manager with it.
                 serviceNotifyManager.notify(Globals.NOTIFY_ID, serviceNotification.build());
                 // now broadcast it to the overview activity so it can get the initial list of 10 stocks.
-                Intent firstTimeUpdate = new Intent(); //TODO: Should maybe be in a method? it seems to be called twice.
-                firstTimeUpdate.setAction(LIST_OF_STOCKS_BROADCAST_ACTION);
-//        firstTimeUpdate.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionMultiStock));
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(firstTimeUpdate);
+                broadcastDatabaseStockListUpdate();
             }
         };
         asyncSaveAndBroadcastInitData.execute();
@@ -272,7 +262,7 @@ public class StockService extends Service {
         StringBuilder csvString = new StringBuilder();
         //First check if there are any symbols in the list
         if (!localStockSymbolList.isEmpty()) {
-            //Since the global symbolist can have more than one of the same symbol.
+            //Since the local symbolist can have more than one of the same symbol.
             //But for both the request and a later database query we only want 1 of each symbol.
             //Create a hash-map for the symbolist, that way multiple occurrences of the same symbol is ignored.
             Set<String> symbol_hash_map = new HashSet<>(localStockSymbolList);
@@ -312,8 +302,6 @@ public class StockService extends Service {
 
     // for requesting a single stock.
     public void requestSingleStock(final String requestSymbol, final int amountOfStocks) {
-        //First add the new symbol to the stock symbol list
-//        Globals.stockSymbolList.add(requestSymbol); //TODO: Should be added to the stock symbol list only after the success
 
         // Make a new request string with a single symbol in it.
         String requestUrl = Globals.STOCK_MARKET_ENDPOINT + requestSymbol + Globals.STOCK_QUOTE_FILTER_STRING;
@@ -323,13 +311,12 @@ public class StockService extends Service {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //If the symbol doesn't exist the api returns an empty object body: {}
-                        //So if its long than that we got something back.
-                        // TODO: Try alternative with: response.contains(requestSymbol)
-                        if (response.length() > 2) {
+                        // We check if the response actually contains the symbol,
+                        // if it does then we can assume a success.
+                        if (response.contains(requestSymbol)) {
                             // on successful request handle response
                             Log.d(STOCK_LOG, "Request successful, the stock was found");
-                            //Since the request was a success add it to the global symbol list
+                            //Since the request was a success add it to the local symbol list
                             //So it automatically gets updated on next auto request
                             localStockSymbolList.add(requestSymbol);
                             asyncHandleSingleStockResponse(response, requestSymbol, amountOfStocks);
@@ -386,10 +373,9 @@ public class StockService extends Service {
     }
 
     public void requestRefreshStockList() {
-        // Call with the global symbol list
-        String test1 = makeCsvSymbolString();
-        requestAllStocksInList(test1);
-//        requestAllStocksInList(makeCsvSymbolString(Globals.stockSymbolList));
+        // Call with the latest version of the local symbol list
+        String requestString = makeCsvSymbolString();
+        requestAllStocksInList(requestString);
         Log.d(STOCK_LOG, "Forced update request from user");
     }
 
@@ -458,9 +444,6 @@ public class StockService extends Service {
 
                 Intent broadcastIntent = new Intent();
                 broadcastIntent.setAction(LIST_OF_STOCKS_BROADCAST_ACTION); // Set the broadcast action filter
-                // Broadcast action code for list of stocks
-                //TODO: No longer seems needed
-//                broadcastIntent.putExtra(BROADCAST_ACTION_RESULT_CODE, getResources().getString(R.string.broadcastActionMultiStock));
                 Log.d(STOCK_LOG, "Broadcasting list of stock:" + response);
                 // send it off to be caught in the mainActivity thread
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcastIntent);
@@ -490,11 +473,10 @@ public class StockService extends Service {
     public void asyncDeleteSingleStock(final StockQuote stockQuote) {
         for (Iterator<String> iterator = localStockSymbolList.listIterator(); iterator.hasNext(); ) {
             //We iterate through the list till we find the stock symbol,
-            // then remove it from the global symbol list, so that it is no longer included in auto updates.
+            // then remove it from the local symbol list, so that it is no longer included in auto updates.
             if (iterator.next().equals(stockQuote.getStockSymbol())) {
                 iterator.remove();
                 Log.d(STOCK_LOG, "Removing Global stock symbol: " + iterator);
-                List<String> testList = localStockSymbolList;
                 Log.d(STOCK_LOG, "Now the list holds: " + localStockSymbolList);
                 break;
             }
@@ -552,7 +534,7 @@ public class StockService extends Service {
                 .setContentTitle(getText(R.string.notificationTitle))
                 .setContentText(getText(R.string.notificationUpdateString) + " " + getCurrentDateTime())
                 .setSmallIcon(R.mipmap.ic_stockmarket_round);
-//                .setTicker(getText(R.string.notificationTicker)); //TODO: maybe no ticker, and maybe try with channel id aswell.
+//                .setTicker(getText(R.string.notificationTicker));
 //                .setChannelId(Globals.CHANNEL_ID)
     }
 
@@ -567,7 +549,7 @@ public class StockService extends Service {
     }
 
     //Used to immediately init and update the view.
-    private void broadcastDatabaseInitSuccess() {
+    private void broadcastDatabaseStockListUpdate() {
         Intent firstTimeUpdate = new Intent();
         firstTimeUpdate.setAction(LIST_OF_STOCKS_BROADCAST_ACTION);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(firstTimeUpdate);

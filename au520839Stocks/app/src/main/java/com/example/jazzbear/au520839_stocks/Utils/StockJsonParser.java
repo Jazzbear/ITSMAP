@@ -9,6 +9,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+// Parser class i came up with, after seeing the out commented
+// example in stunt code/demo code, from lecture 7. I use explicit json parsing here.
+// because i couldn't automate mapping with GSON, when getting a batch. Due to the weird,
+// way IEX returns multiple object, funny enough, not in a array.
 public class StockJsonParser {
 
     // Method for parsing a single json stock object to a stockQuote object.

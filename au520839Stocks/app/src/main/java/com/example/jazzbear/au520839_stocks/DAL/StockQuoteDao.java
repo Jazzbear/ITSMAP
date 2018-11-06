@@ -18,12 +18,6 @@ public interface StockQuoteDao {
     @Query("SELECT * FROM stockquote WHERE uid IN (:ids)")
     List<StockQuote> loadAllStocksById(long[] ids);
 
-//    @Query("SELECT * FROM stockquote where stockSymbol like :symbol")
-//    StockQuote getStockBySymbol(String symbol);
-//
-//    @Query("SELECT * FROM stockquote WHERE stockSymbol in (:symbols)")
-//    List<StockQuote> loadAllStocksBySymbols(List<String> symbols);
-
     // INSERTS
     @Insert
     long insertSingleStock(StockQuote stock);

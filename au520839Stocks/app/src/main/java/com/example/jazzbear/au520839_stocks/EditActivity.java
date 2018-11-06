@@ -114,7 +114,7 @@ public class EditActivity extends AppCompatActivity {
         /*Its fine here that we just saved the stock even with empty fields,
          * because it is never parsed back to details on cancel, and saveChanges will
          * never allow empty fields.*/
-        getChanges(); // Get changes before saving so that the editStock object is up to date.
+//        getChanges(); // Get changes before saving so that the editStock object is up to date.
         outState.putParcelable(Globals.STOCK_STATE, editStock);
         super.onSaveInstanceState(outState);
     }
