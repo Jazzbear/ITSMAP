@@ -26,6 +26,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     private static final String DETAILS_LOG = "Details_Activity_Log";
     private boolean serviceBound = false;
+    private boolean deletePressed = false;
     Button backButton, editButton, deleteButton;
     //All the text views
     private TextView detailSymbol, detailName, detailPrice, detailAmount,
@@ -177,8 +178,10 @@ public class DetailsActivity extends AppCompatActivity {
     //Finish activity and return to overview. With a request for delete.
     private void deleteButtonPressed() {
         //Maybe a dialog here would be good, to confirm or cancel
-        Intent deleteData = new Intent();
-        setResult(Globals.RESULT_DELETE, deleteData);
+//        Intent deleteData = new Intent();
+        deletePressed = true;
+        stockService.asyncDeleteSingleStock(detailsStock);
+        setResult(Globals.RESULT_DELETE);
         finish();
     }
 
@@ -207,7 +210,11 @@ public class DetailsActivity extends AppCompatActivity {
 //            String intenCode = intent.getStringExtra(StockService.BROADCAST_ACTION_RESULT_CODE);
 
             assert intent != null;
-            if (intent.getAction().equals(StockService.LIST_OF_STOCKS_BROADCAST_ACTION)) {
+            if (intent.getAction().equals(StockService.LIST_OF_STOCKS_BROADCAST_ACTION) && !deletePressed) {
+                //TODO: Should be changed to instead check for specific stock per id.
+                //TODO: Instead of this inefficient way of checking for the update.
+                //TODO: Deffinite bottleneck the bigger the list becomes.
+
                 List<StockQuote> stockListFromService = stockService.getServiceStockList();
                 // iterate through the list until we find the stock
                 for (StockQuote updateStock : stockListFromService) {

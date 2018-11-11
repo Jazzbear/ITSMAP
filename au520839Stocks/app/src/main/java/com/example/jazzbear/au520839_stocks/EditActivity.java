@@ -1,8 +1,13 @@
 package com.example.jazzbear.au520839_stocks;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +18,12 @@ import com.example.jazzbear.au520839_stocks.Models.StockQuote;
 import com.example.jazzbear.au520839_stocks.Utils.Globals;
 
 public class EditActivity extends AppCompatActivity {
+    //Service related
+    private static final String DETAILS_LOG = "details_log_tag";
+    private boolean serviceBound = false;
+    private ServiceConnection serviceConnection;
+    private StockService stockService;
+
     TextView txtStockCompanyName, txtStockSector;
     EditText editStockValue, editStockAmount;
     Button saveButton, cancelButton;
@@ -37,6 +48,7 @@ public class EditActivity extends AppCompatActivity {
         editStockAmount = findViewById(R.id.stockAmountField);
         txtStockSector = findViewById(R.id.txtSectorField);
         updateEditUI();
+        setupServiceConnection();
 
         saveButton = findViewById(R.id.saveBtn);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -55,6 +67,23 @@ public class EditActivity extends AppCompatActivity {
                 cancelChanges();
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindToStockService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unBindFromStockService();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void updateEditUI() {
@@ -76,6 +105,7 @@ public class EditActivity extends AppCompatActivity {
         if (checkFieldsAreValid()) {
             getChanges();
             Intent editResult = new Intent().putExtra(Globals.STOCK_OBJECT_EXTRA, editStock);
+            stockService.asyncUpdateSingleStock(editStock);
             setResult(RESULT_OK, editResult);
             finish();
         } else {
@@ -107,7 +137,39 @@ public class EditActivity extends AppCompatActivity {
         return true;
     }
 
+    private void setupServiceConnection() {
+        // connect to service
+        serviceConnection = new ServiceConnection() {
+            @Override //Called when binding to service
+            public void onServiceConnected(ComponentName className, IBinder service) {
+                stockService = ((StockService.StockServiceBinder) service).getService();
+                Log.d(DETAILS_LOG, "Stock service connected");
+            }
 
+            @Override //Called when unbinding from service
+            public void onServiceDisconnected(ComponentName className) {
+                stockService = null;
+                Log.d(DETAILS_LOG, "Stock service disconnected");
+            }
+        };
+    }
+
+    void bindToStockService() {
+        // Method for binding to service
+        bindService(new Intent(EditActivity.this, StockService.class),
+                serviceConnection, Context.BIND_AUTO_CREATE); // creates service it on binding if it isn't created.
+
+        Log.d(DETAILS_LOG, "Binding to service");
+        serviceBound = true;
+    }
+
+    void unBindFromStockService() {
+        if (serviceBound) {
+            unbindService(serviceConnection);
+            Log.d(DETAILS_LOG, "Unbinding from service");
+            serviceBound = false;
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

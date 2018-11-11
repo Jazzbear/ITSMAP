@@ -54,17 +54,17 @@ public class OverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // Setup connection, so we can bind to stockService later, and we also start the service here.
         setupServiceConnection(); //Needs to be connected before we handle saved instance state.
+        // For database debugging
+        enableStethos();
+
         // Recreating after a onDestroy and instance state saved.
         if (savedInstanceState != null) {
             // On rotation or other means that destroy and recreate the app,
             // We restore the list position of the app.
             listPosition = savedInstanceState.getInt(Globals.LIST_STATE);
-
         }
         // Init the layout view for activity
         setContentView(R.layout.activity_overview);
-        // For database debugging
-        enableStethos();
 
         //Setup listView
         stockListView = findViewById(R.id.listViewStocks);
@@ -107,46 +107,13 @@ public class OverviewActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        unBindFromStockService();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //TODO: Maybe i don't want to unregister?
+        unBindFromStockService();
         unregisterBroadcastReceiver();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Globals.DETAILS_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                //Update the stock object and update the ui
-                if (data != null) {
-                    //When we get some data from details activity intent result.
-                    // First get the data
-                    StockQuote stockQuote = data.getParcelableExtra(Globals.STOCK_OBJECT_EXTRA);
-                    //We update stocks properties in the stock list,
-                    // because they could have changed, while in detailsActivity
-                    stockQuote.setLatestStockValue(listOfStockQuotes.get(listPosition - 1).getLatestStockValue());
-                    stockQuote.setTimeStamp(listOfStockQuotes.get(listPosition - 1).getTimeStamp());
-                    stockService.asyncUpdateSingleStock(stockQuote);
-                    listOfStockQuotes.set(listPosition - 1, stockQuote);
-                    updateAdaptor();
-                }
-            } else if (resultCode == Globals.RESULT_DELETE) {
-                //Get the stock we want to delete
-                StockQuote stockToDelete = listOfStockQuotes.get(listPosition - 1);
-                //delete it and remove it from the list.
-                stockService.asyncDeleteSingleStock(stockToDelete);
-                // We remove it from the local list, and the async method before,
-                // will do the same for the service's stockList
-                listOfStockQuotes.remove(listPosition - 1);
-                //update the list view adaptor with the changes
-                updateAdaptor();
-            }
-        }
     }
 
     @Override
@@ -255,8 +222,7 @@ public class OverviewActivity extends AppCompatActivity {
                 // and also ref: https://developer.android.com/guide/components/bound-services
                 stockService = ((StockService.StockServiceBinder) service).getService();
                 Log.d(OVERVIEW_LOG, "Stock service connected");
-
-                //TODO: For listview after onSaveInstanceState
+                // Get the newest list.
                 listOfStockQuotes = stockService.getServiceStockList();
                 updateAdaptor();
             }
@@ -296,7 +262,6 @@ public class OverviewActivity extends AppCompatActivity {
     //define our broadcast receiver for (local) broadcasts.
     // Registered and unregistered in onStart() and onStop() methods
     private BroadcastReceiver overviewBroadcastReceiver = new BroadcastReceiver() {
-        //TODO: Should maybe have a final @Nullable here, if i want to check on intent actions instead.
         @Override
         public void onReceive(Context context, final @Nullable Intent intent) {
             Log.d(OVERVIEW_LOG, "Broadcast received from bg service");

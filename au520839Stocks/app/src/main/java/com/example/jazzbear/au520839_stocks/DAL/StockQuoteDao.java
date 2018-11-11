@@ -12,8 +12,11 @@ import java.util.List;
 
 @Dao
 public interface StockQuoteDao {
+    @Query("SELECT * FROM stockquote WHERE uid LIKE (:id)")
+    StockQuote getSingleStockQuote(int id);
+
     @Query("SELECT * FROM stockquote")
-    List<StockQuote> getAllStocks();
+    List<StockQuote> getAllStockQuotes();
 
     @Query("SELECT * FROM stockquote WHERE uid IN (:ids)")
     List<StockQuote> loadAllStocksById(long[] ids);
