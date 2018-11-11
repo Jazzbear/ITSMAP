@@ -1,6 +1,7 @@
 package com.example.jazzbear.au520839_stocks.Utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,24 +66,40 @@ public class StockListAdaptor extends BaseAdapter {
 
         // again first check the stockList isn't empty and that we aren't at the end of the list.
         if (listOfStocks != null && listOfStocks.size() > position) {
-            itemListStock = listOfStocks.get(position);
+            itemListStock = listOfStocks.get(position); // get the positions of of the stock list.
+            // Adaptor view elements.
             TextView symbolText = convertView.findViewById(R.id.itemSymbol);
-            symbolText.setText(itemListStock.getStockSymbol());
             TextView companyNameText = convertView.findViewById(R.id.itemCompanyName);
-            companyNameText.setText(itemListStock.getCompanyName());
             TextView priceText = convertView.findViewById(R.id.itemCurrentPrice);
-            priceText.setText(Double.toString(itemListStock.getLatestStockValue()));
             TextView priceDifference = convertView.findViewById(R.id.itemPriceDifference);
-            //Setting the max decimals for the double. Im only interested in the last 3 digits here.
-            priceDifference.setText(String.format("%.3f", itemListStock.getPriceDifference()));
             TextView timeStamp = convertView.findViewById(R.id.itemTimestamp);
-            timeStamp.setText(itemListStock.getTimeStamp());
             TextView stockAmount = convertView.findViewById(R.id.itemStockAmount);
-            stockAmount.setText("#Stocks: " + Integer.toString(itemListStock.getAmountOfStocks()));
             TextView totalEarnins = convertView.findViewById(R.id.itemTotalEarnings);
+            symbolText.setText(itemListStock.getStockSymbol());
+            companyNameText.setText(itemListStock.getCompanyName());
+            priceText.setText(Double.toString(itemListStock.getLatestStockValue()));
+
+            // Added the functionality of coloring the text view.
+            // Coloring price difference by using the technique from this post:
+            // https://stackoverflow.com/questions/4602902/how-to-set-the-text-color-of-textview-in-code
+            Double priceDiff = itemListStock.getPriceDifference();
+            if (priceDiff < 0) {
+                //Setting the max decimals for the double. Im only interested in the last 3 digits here.
+                priceDifference.setText(String.format("%.3f", itemListStock.getPriceDifference()));
+                priceDifference.setTextColor(Color.parseColor("#ff0000")); //Red
+            }
+            else if (priceDiff > 0) {
+                priceDifference.setText(String.format("%.3f", itemListStock.getPriceDifference()));
+                priceDifference.setTextColor(Color.parseColor("#00cc00")); //green
+            } else {
+                priceDifference.setText(String.format("%.3f", itemListStock.getPriceDifference()));
+//                priceDifference.setTextColor(Color.parseColor("#000000")); //black
+            }
+
+            timeStamp.setText(itemListStock.getTimeStamp());
+            stockAmount.setText(context.getString(R.string.adaptorNumberOfStocks, Integer.toString(itemListStock.getAmountOfStocks())));
             //Only want the last 2 digits here.
-            totalEarnins.setText("Total: " + String.format("%.2f", itemListStock.getTotalEarnings()));
-//            totalEarnins.setText(Double.toString(itemListStock.getTotalEarnings()));
+            totalEarnins.setText(context.getString(R.string.adaptorTotalValue, String.format("%.2f", itemListStock.getTotalEarnings())));
             return convertView;
         }
         // Until the list is populated we return null, and keep the listView empty

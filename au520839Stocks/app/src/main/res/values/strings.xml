@@ -56,6 +56,8 @@
         The stock of that symbol was not found. Make sure you input an existing stock-
         symbol, from IEX list of valid symbols.</string>
     <string name="notificationUpdateString">Stock info were last updated at:</string>
+    <string name="adaptorNumberOfStocks">#Stocks: %s</string>
+    <string name="adaptorTotalValue">Total: %s</string>
 
     <!--Service related-->
     <string name="service1Description" translatable="false">A started service that runs in the background</string>

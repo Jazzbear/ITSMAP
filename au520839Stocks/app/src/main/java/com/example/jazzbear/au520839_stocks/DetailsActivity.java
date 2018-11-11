@@ -22,8 +22,6 @@ import com.example.jazzbear.au520839_stocks.Utils.Globals;
 
 import java.util.List;
 
-import static com.example.jazzbear.au520839_stocks.Utils.Globals.STOCK_LOG;
-
 public class DetailsActivity extends AppCompatActivity {
 
     private static final String DETAILS_LOG = "Details_Activity_Log";
@@ -124,7 +122,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
     //Put it in a method in case i want to move it to a different lifecycle event.
     private void unregisterBroadcastReceiver() {
-        Log.d(STOCK_LOG, "unregistering receivers");
+        Log.d(DETAILS_LOG, "unregistering receivers");
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(detailsBroadcastReceiver);
     }
@@ -138,13 +136,13 @@ public class DetailsActivity extends AppCompatActivity {
             @Override //Called when binding to service
             public void onServiceConnected(ComponentName className, IBinder service) {
                 stockService = ((StockService.StockServiceBinder) service).getService();
-                Log.d(Globals.STOCK_LOG, "Stock service connected");
+                Log.d(DETAILS_LOG, "Stock service connected");
             }
 
             @Override //Called when unbinding from service
             public void onServiceDisconnected(ComponentName className) {
                 stockService = null;
-                Log.d(Globals.STOCK_LOG, "Stock service disconnected");
+                Log.d(DETAILS_LOG, "Stock service disconnected");
             }
         };
     }
@@ -189,14 +187,14 @@ public class DetailsActivity extends AppCompatActivity {
         bindService(new Intent(DetailsActivity.this, StockService.class),
                 serviceConnection, Context.BIND_AUTO_CREATE); // creates service it on binding if it isn't created.
 
-        Log.d(STOCK_LOG, "Binding to service");
+        Log.d(DETAILS_LOG, "Binding to service");
         serviceBound = true;
     }
 
     void unBindFromStockService() {
         if (serviceBound) {
             unbindService(serviceConnection);
-            Log.d(STOCK_LOG, "Unbinding from service");
+            Log.d(DETAILS_LOG, "Unbinding from service");
             serviceBound = false;
         }
     }

@@ -63,5 +63,7 @@
     <!--Broadcast receiver related-->
     <string name="err_bg_service_result">ERROR: Fejl kunne ikke hente resultat</string>
     <string name="dialogStockAmountHelpText">Skrive et antal</string>
+    <string name="adaptorNumberOfStocks">#Aktier: %s</string>
+    <string name="adaptorTotalValue">Total: %s</string>
 
 </resources>

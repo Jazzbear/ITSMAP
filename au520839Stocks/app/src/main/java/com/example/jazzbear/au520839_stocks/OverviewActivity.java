@@ -35,9 +35,9 @@ import java.util.List;
 import static com.example.jazzbear.au520839_stocks.Utils.Globals.STOCK_LOG;
 
 public class OverviewActivity extends AppCompatActivity {
+    private static final String OVERVIEW_LOG = "overview_log_tag";
     // View elements
     Button addButton, refreshButton;
-
     private ListView stockListView;// Stock list we use to populate adaptor
     private StockListAdaptor stockListAdaptor;
     private List<StockQuote> listOfStockQuotes;
@@ -161,7 +161,7 @@ public class OverviewActivity extends AppCompatActivity {
 
     //For registering broadcast receiver
     private void registerBroadcastReceiver() {
-        Log.d(STOCK_LOG, "registering receiver");
+        Log.d(OVERVIEW_LOG, "registering receiver");
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(StockService.SINGLE_STOCK_BROADCAST_ACTION);
         iFilter.addAction(StockService.LIST_OF_STOCKS_BROADCAST_ACTION);
@@ -171,7 +171,7 @@ public class OverviewActivity extends AppCompatActivity {
 
     //Put it in a method in case i want to move it to a different lifecycle event.
     private void unregisterBroadcastReceiver() {
-        Log.d(STOCK_LOG, "unregistering receivers");
+        Log.d(OVERVIEW_LOG, "unregistering receivers");
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(overviewBroadcastReceiver);
     }
@@ -254,7 +254,7 @@ public class OverviewActivity extends AppCompatActivity {
                 //ref: http://developer.android.com/reference/android/app/Service.html
                 // and also ref: https://developer.android.com/guide/components/bound-services
                 stockService = ((StockService.StockServiceBinder) service).getService();
-                Log.d(Globals.STOCK_LOG, "Stock service connected");
+                Log.d(OVERVIEW_LOG, "Stock service connected");
 
                 //TODO: For listview after onSaveInstanceState
                 listOfStockQuotes = stockService.getServiceStockList();
@@ -269,7 +269,7 @@ public class OverviewActivity extends AppCompatActivity {
                 // see this happen.
                 //ref: http://developer.android.com/reference/android/app/Service.html
                 stockService = null;
-                Log.d(Globals.STOCK_LOG, "Stock service disconnected");
+                Log.d(OVERVIEW_LOG, "Stock service disconnected");
             }
         };
         // Start the service so it runs in the background regardless
@@ -281,14 +281,14 @@ public class OverviewActivity extends AppCompatActivity {
         bindService(new Intent(OverviewActivity.this, StockService.class),
                 stockServiceConnection, Context.BIND_AUTO_CREATE); // creates service it on binding if it isn't created.
 
-        Log.d(STOCK_LOG, "Binding to service");
+        Log.d(OVERVIEW_LOG, "Binding to service");
         serviceBound = true;
     }
 
     void unBindFromStockService() {
         if (serviceBound) {
             unbindService(stockServiceConnection);
-            Log.d(STOCK_LOG, "Unbinding from service");
+            Log.d(OVERVIEW_LOG, "Unbinding from service");
             serviceBound = false;
         }
     }
@@ -299,7 +299,7 @@ public class OverviewActivity extends AppCompatActivity {
         //TODO: Should maybe have a final @Nullable here, if i want to check on intent actions instead.
         @Override
         public void onReceive(Context context, final @Nullable Intent intent) {
-            Log.d(STOCK_LOG, "Broadcast received from bg service");
+            Log.d(OVERVIEW_LOG, "Broadcast received from bg service");
             // Changed this to trigger on the broadcast action it self,
             // there was no need for the intent extra's i used as type of broadcast before.
             // and although the linter/compiler gives a warning about a possible null pointer exception.
@@ -307,10 +307,10 @@ public class OverviewActivity extends AppCompatActivity {
             // So i chose to use it, to get less boilerplate code.
             assert intent != null;
             if (intent.getAction().equals(StockService.SINGLE_STOCK_BROADCAST_ACTION)) {
-                Log.d(STOCK_LOG, "Broadcast received, call the handler for single stock result");
+                Log.d(OVERVIEW_LOG, "Broadcast received, call the handler for single stock result");
                 handleStockResult();
             } else if (intent.getAction().equals(StockService.LIST_OF_STOCKS_BROADCAST_ACTION)) {
-                Log.d(STOCK_LOG, "Broadcast received, call the handler for stockList result");
+                Log.d(OVERVIEW_LOG, "Broadcast received, call the handler for stockList result");
                 handleStockListResult();
             }
         }
